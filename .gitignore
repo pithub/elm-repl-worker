@@ -1,3 +1,6 @@
+.gh-pages/
+dist/io.js
+dist/tea.js
 dist/worker.js
 elm-stuff/
 work-in-progress/
