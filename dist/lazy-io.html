@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link type="text/css" rel="stylesheet" href="worker.css">
+    <script src="io.js"></script>
+  </head>
+  <body>
+    <pre id="repl-ui"></pre>
+    <script>
+      const client = Elm.Repl.Client.IO.init({ node: document.getElementById("repl-ui") });
+      //
+      // load the REPL worker on demand
+      //
+      const workerScope = this
+      //
+      function loadWorker(payload) {
+        fetch('worker.js')
+          .then(response => response.text())
+          .then(code => (workerScope.eval(code), initWorker(payload)))
+          .catch(error => client.ports.receiveFromWorkerPort.send(
+            [false, 'Error loading REPL: ' + error.message, []]
+          ))
+      }
+      client.ports.sendToWorkerPort.subscribe(loadWorker)
+      //
+      let worker = null
+      //
+      function initWorker(payload) {
+        client.ports.sendToWorkerPort.unsubscribe(loadWorker)
+        //
+        worker = Elm.Repl.Worker.init({ flags: [
+          ['mountStatic', 'elm-home.dat', '.elm'],
+          ['start', payload, ''],
+        ]})
+        //
+        client.ports.sendToWorkerPort.subscribe(function(data) {
+          worker.ports.receiveFromClientPort.send(data)
+        })
+        worker.ports.sendToClientPort.subscribe(function(data) {
+          client.ports.receiveFromWorkerPort.send(data)
+        })
+        //
+        worker.ports.sendToJavaScriptPort.subscribe(function(code) {
+          try {
+            const evalResult = eval(code + '\n_result;')
+            worker.ports.receiveFromJavaScriptPort.send([true, evalResult])
+          } catch (error) {
+            worker.ports.receiveFromJavaScriptPort.send([false, error.message])
+          }
+        })
+      }
+    </script>
+  </body>
+</html>
