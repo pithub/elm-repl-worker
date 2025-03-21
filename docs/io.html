@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link type="text/css" rel="stylesheet" href="worker.css">
+    <script src="worker.js"></script>
+    <script src="io.js"></script>
+  </head>
+  <body>
+    <pre id="repl-ui"></pre>
+    <script>
+      const worker = Elm.Repl.Worker.init({ flags: [['mountStatic', 'elm-home.dat', '.elm']]});
+      const client = Elm.Repl.Client.IO.init({ node: document.getElementById("repl-ui") });
+      //
+      function connectSyncPorts(sendPort, receivePort) {
+        sendPort.subscribe(function(data) {
+          receivePort.send(data);
+        });
+      }
+      //
+      connectSyncPorts(client.ports.sendToWorkerPort, worker.ports.receiveFromClientPort);
+      connectSyncPorts(worker.ports.sendToClientPort, client.ports.receiveFromWorkerPort);
+      //
+      worker.ports.sendToJavaScriptPort.subscribe(function(code) {
+        try {
+          const evalResult = eval(code + '\n_result;');
+          worker.ports.receiveFromJavaScriptPort.send([true, evalResult]);
+        } catch (error) {
+          worker.ports.receiveFromJavaScriptPort.send([false, error.message]);
+        }
+      });
+    </script>
+  </body>
+</html>
