@@ -10,8 +10,6 @@ module Repl.Api exposing
     , WorkerState(..)
     , clientRequestCodec
     , clientToWorkerApi
-    , javaScriptRequestCodec
-    , javaScriptResponseCodec
     , workerResponseCodec
     , workerToJavaScriptRequester
     )

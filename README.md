@@ -1,12 +1,15 @@
-# UI for Testing the Elm Compiler in Elm
+# Elm REPL Worker
 
 <br>
 
 
 ## What Is It?
 
-A port of the Elm compiler from Haskell to Elm,
-together with a simple Elm reactor like user interface.
+An Elm `Platform.worker` that runs `elm repl` internally.
+It communicates with your app via ports.
+
+The REPL uses a [port of the Elm compiler](https://github.com/pithub/elm-compiler-in-elm)
+from Haskell to Elm.
 
 For more information see the recording of the August 2024 Elm Online Meetup:  
 https://www.youtube.com/watch?v=OK9S_HUdReA.
@@ -14,46 +17,36 @@ https://www.youtube.com/watch?v=OK9S_HUdReA.
 <br>
 
 
-## How to Run It?
+## How to Use It?
 
 
-#### Compile the App
-
-```sh
-elm make src/Main.elm --output dist/index.js
-```
-
-
-#### Start the CORS Proxy and File Server
+#### Compile the Worker
 
 ```sh
-cd cors-proxy
-npm install
-node cors-proxy.js
+make
 ```
 
-#### Run the App
+or
 
- Open [localhost:8088](http://localhost:8088) in your browser.  
- 
-
-
-#### Show Help Message
-
- Enter "h" or an empty line in the command input field.
+```sh
+elm make src/Repl/Worker.elm --output dist/worker.js
+```
 
 <br>
 
 
-## What's next?
+#### Add It to Your App
 
-As of today, I have no plans to further develop this application,
-except perhaps to fix the remaining issues.
-Instead, I want to use parts of the code for my "interactive
-tutorials" as I talked about in the Elm Online Meetup.
+In branch `repl-worker-ui` there are two examples for adding
+the REPL worker to an Elm app:
 
-If there is enough and serious interest, I could try to extract
-self-contained parts of the code and publish them,
-for example as Elm packages.
+* [tea.html](https://github.com/pithub/elm-repl-worker/blob/repl-worker-ui/dist/tea.html) -
+  Adds the REPL worker to a normal TEA app -
+  [Live demo](https://pithub.github.io/elm-repl-worker/tea.html)
+
+* [io.html](https://github.com/pithub/elm-repl-worker/blob/repl-worker-ui/dist/io.html) -
+  Adds the REPL worker to an app using the IO monad of the Elm compiler port -
+  [Live demo](https://pithub.github.io/elm-repl-worker/io.html)
+
 
 <br>
