@@ -10,6 +10,7 @@ module Repl.Api exposing
     , WorkerState(..)
     , clientRequestCodec
     , clientToWorkerApi
+    , clientToWorkerLowLevelSendFun
     , workerResponseCodec
     , workerToJavaScriptRequester
     )
@@ -76,6 +77,11 @@ workerResponseCodec =
                 ( False, error, messages ) ->
                     { workerState = WorkerStateStopped error, messages = messages }
     }
+
+
+clientToWorkerLowLevelSendFun : Port.LowLevelSendFun s WorkerResponse WorkerResponseWire
+clientToWorkerLowLevelSendFun =
+    Port.lowLevelSend workerResponseCodec
 
 
 

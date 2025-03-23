@@ -172,6 +172,9 @@ flagToMsg ( config, val1, val2 ) =
                 \( imports, types, decls ) ->
                     ( imports, types, Map.insert val1 (val2 ++ "\n") decls )
 
+        "start" ->
+            IO.bind (handleClientCall { userInput = val1 }) clientToWorkerLowLevelSend
+
         _ ->
             IO.noOp
 
@@ -189,6 +192,11 @@ port sendToClientPort : Port.SendPort msg Api.WorkerResponseWire
 clientToWorkerResponder : Port.SyncResponder Model Api.ClientRequest Api.WorkerResponse
 clientToWorkerResponder =
     Api.clientToWorkerApi.responderFun receiveFromClientPort sendToClientPort
+
+
+clientToWorkerLowLevelSend : Port.LowLevelSend Model Api.WorkerResponse
+clientToWorkerLowLevelSend =
+    Api.clientToWorkerLowLevelSendFun sendToClientPort
 
 
 

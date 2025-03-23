@@ -1,5 +1,7 @@
 module Extra.System.IO.Port exposing
     ( Codec
+    , LowLevelSend
+    , LowLevelSendFun
     , ReceivePort
     , SafeCodec
     , SendPort
@@ -12,6 +14,8 @@ module Extra.System.IO.Port exposing
     , SyncRespond
     , SyncResponder
     , SyncResponderFun
+    , lowLevelSend
+    , lowLevelSendFun
     , syncApi
     )
 
@@ -46,6 +50,34 @@ type alias ReceivePort msg wire =
 
 
 
+-- LOW LEVEL PRIMITIVES
+
+
+type alias LowLevelSend s valueOut =
+    valueOut -> IO.IO s ()
+
+
+lowLevelSend :
+    Codec valueOut valueIn wire
+    -> SendPort (IO.IO s ()) wire
+    -> LowLevelSend s valueOut
+lowLevelSend codec sendPort value =
+    IO.liftCmdIO (sendPort (codec.encode value))
+
+
+type alias LowLevelSendFun s valueOut wire =
+    SendPort (IO.IO s ()) wire
+    -> LowLevelSend s valueOut
+
+
+lowLevelSendFun :
+    Codec valueOut valueIn wire
+    -> LowLevelSendFun s valueOut wire
+lowLevelSendFun codec sendPort =
+    lowLevelSend codec sendPort
+
+
+
 -- SYNC REQUESTER
 
 
@@ -71,7 +103,7 @@ syncRequest requestCodec lens requestPort requestOut =
         \cont ->
             IO.sequence
                 [ IO.putLens lens (Just cont)
-                , IO.liftCmdIO (requestPort (requestCodec.encode requestOut))
+                , lowLevelSend requestCodec requestPort requestOut
                 ]
 
 
@@ -144,7 +176,7 @@ syncResponderFun requestCodec responseCodec receivePort sendPort callback =
         \requestWire ->
             IO.bind (callback (requestCodec.decode requestWire)) <|
                 \response ->
-                    IO.liftCmdIO (sendPort (responseCodec.encode response))
+                    lowLevelSend responseCodec sendPort response
 
 
 
