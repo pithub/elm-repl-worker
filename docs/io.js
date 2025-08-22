@@ -5159,31 +5159,9 @@ var $elm$core$Task$perform = F2(
 				A2($elm$core$Task$map, toMessage, task)));
 	});
 var $elm$browser$Browser$element = _Browser_element;
-var $author$project$Repl$Client$IO$Model = function (a) {
-	return {$: 'Model', a: a};
-};
-var $author$project$Repl$Client$IO$ReplHidden = function (a) {
-	return {$: 'ReplHidden', a: a};
-};
-var $author$project$Repl$Client$IO$initialModel = $author$project$Repl$Client$IO$Model(
-	{
-		replState: $author$project$Repl$Client$IO$ReplHidden($elm$core$Maybe$Nothing),
-		workerCont: $elm$core$Maybe$Nothing
-	});
-var $author$project$Extra$System$IO$Pure = function (a) {
-	return {$: 'Pure', a: a};
-};
-var $author$project$Extra$System$IO$return = F2(
-	function (a, s) {
-		return _Utils_Tuple2(
-			$author$project$Extra$System$IO$Pure(a),
-			s);
-	});
-var $author$project$Extra$System$IO$noOp = $author$project$Extra$System$IO$return(_Utils_Tuple0);
-var $author$project$Repl$Client$IO$initialMsg = $author$project$Extra$System$IO$noOp;
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
-var $author$project$Repl$Client$IO$update = F2(
+var $author$project$Extra$System$IO$update = F2(
 	function (msg, model) {
 		update:
 		while (true) {
@@ -5207,8 +5185,38 @@ var $author$project$Repl$Client$IO$update = F2(
 			}
 		}
 	});
-var $author$project$Repl$Client$IO$init = function (_v0) {
-	return A2($author$project$Repl$Client$IO$update, $author$project$Repl$Client$IO$initialMsg, $author$project$Repl$Client$IO$initialModel);
+var $author$project$Extra$System$IO$init = F3(
+	function (initialModel, initialIO, flags) {
+		return A2(
+			$author$project$Extra$System$IO$update,
+			initialIO(flags),
+			initialModel(flags));
+	});
+var $author$project$Repl$Client$IO$Model = function (a) {
+	return {$: 'Model', a: a};
+};
+var $author$project$Repl$Client$IO$ReplHidden = function (a) {
+	return {$: 'ReplHidden', a: a};
+};
+var $author$project$Repl$Client$IO$initialModel = function (_v0) {
+	return $author$project$Repl$Client$IO$Model(
+		{
+			replState: $author$project$Repl$Client$IO$ReplHidden($elm$core$Maybe$Nothing),
+			workerCont: $elm$core$Maybe$Nothing
+		});
+};
+var $author$project$Extra$System$IO$Pure = function (a) {
+	return {$: 'Pure', a: a};
+};
+var $author$project$Extra$System$IO$return = F2(
+	function (a, s) {
+		return _Utils_Tuple2(
+			$author$project$Extra$System$IO$Pure(a),
+			s);
+	});
+var $author$project$Extra$System$IO$noOp = $author$project$Extra$System$IO$return(_Utils_Tuple0);
+var $author$project$Repl$Client$IO$initialMsg = function (_v0) {
+	return $author$project$Extra$System$IO$noOp;
 };
 var $author$project$Repl$Api$clientRequestCodec = {
 	decode: function (wire) {
@@ -5850,6 +5858,11 @@ var $author$project$Repl$Client$IO$view = function (_v0) {
 	}
 };
 var $author$project$Repl$Client$IO$main = $elm$browser$Browser$element(
-	{init: $author$project$Repl$Client$IO$init, subscriptions: $author$project$Repl$Client$IO$subscriptions, update: $author$project$Repl$Client$IO$update, view: $author$project$Repl$Client$IO$view});
+	{
+		init: A2($author$project$Extra$System$IO$init, $author$project$Repl$Client$IO$initialModel, $author$project$Repl$Client$IO$initialMsg),
+		subscriptions: $author$project$Repl$Client$IO$subscriptions,
+		update: $author$project$Extra$System$IO$update,
+		view: $author$project$Repl$Client$IO$view
+	});
 _Platform_export({'Repl':{'Client':{'IO':{'init':$author$project$Repl$Client$IO$main(
 	$elm$json$Json$Decode$succeed(_Utils_Tuple0))(0)}}}});}(this));

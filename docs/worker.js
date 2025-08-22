@@ -3269,6 +3269,42 @@ var $elm$core$Result$isOk = function (result) {
 };
 var $elm$json$Json$Decode$andThen = _Json_andThen;
 var $elm$json$Json$Decode$index = _Json_decodeIndex;
+var $elm$core$Basics$identity = function (x) {
+	return x;
+};
+var $elm$core$Platform$Cmd$batch = _Platform_batch;
+var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
+var $author$project$Extra$System$IO$update = F2(
+	function (msg, model) {
+		update:
+		while (true) {
+			var _v0 = msg(model);
+			switch (_v0.a.$) {
+				case 'Pure':
+					var newModel = _v0.b;
+					return _Utils_Tuple2(newModel, $elm$core$Platform$Cmd$none);
+				case 'ImpureCmd':
+					var cmd = _v0.a.a;
+					var newModel = _v0.b;
+					return _Utils_Tuple2(newModel, cmd);
+				default:
+					var cont = _v0.a.a;
+					var newModel = _v0.b;
+					var $temp$msg = cont($elm$core$Basics$identity),
+						$temp$model = newModel;
+					msg = $temp$msg;
+					model = $temp$model;
+					continue update;
+			}
+		}
+	});
+var $author$project$Extra$System$IO$init = F3(
+	function (initialModel, initialIO, flags) {
+		return A2(
+			$author$project$Extra$System$IO$update,
+			initialIO(flags),
+			initialModel(flags));
+	});
 var $author$project$Global$State = F8(
 	function (a, b, c, d, e, f, g, h) {
 		return {$: 'State', a: a, b: b, c: c, d: d, e: e, f: f, g: g, h: h};
@@ -3286,9 +3322,6 @@ var $author$project$Repl$Worker$initialLocalState = A3(
 	$elm$core$Maybe$Nothing,
 	_Utils_Tuple3($author$project$Extra$Type$Map$empty, $author$project$Extra$Type$Map$empty, $author$project$Extra$Type$Map$empty),
 	$author$project$Repl$Worker$ReplStopped);
-var $elm$core$Basics$identity = function (x) {
-	return x;
-};
 var $author$project$Terminal$Repl$LocalState = function (a) {
 	return {$: 'LocalState', a: a};
 };
@@ -3331,18 +3364,82 @@ var $author$project$Builder$Generate$initialState = A2(
 	$author$project$Builder$Generate$LocalState,
 	$author$project$Extra$System$MVar$initialState('LocalGraph'),
 	$author$project$Extra$System$MVar$initialState('Types'));
-var $author$project$Builder$Http$initialState = $elm$core$Maybe$Nothing;
-var $author$project$Extra$System$File$FileSystem = F3(
+var $author$project$Extra$System$Config$LocalState = F3(
 	function (a, b, c) {
-		return {$: 'FileSystem', a: a, b: b, c: c};
+		return {$: 'LocalState', a: a, b: b, c: c};
 	});
-var $author$project$Extra$System$File$initialState = A3($author$project$Extra$System$File$FileSystem, $author$project$Extra$Type$Map$empty, _List_Nil, $elm$core$Maybe$Nothing);
+var $author$project$Extra$System$Config$initialState = A3($author$project$Extra$System$Config$LocalState, $elm$core$Maybe$Nothing, $elm$core$Maybe$Nothing, _List_Nil);
+var $author$project$Extra$System$Dir$LocalState = F2(
+	function (a, b) {
+		return {$: 'LocalState', a: a, b: b};
+	});
+var $author$project$Extra$System$Dir$initialState = A2($author$project$Extra$System$Dir$LocalState, $author$project$Extra$Type$Map$empty, _List_Nil);
 var $author$project$Terminal$Command$LocalState = F6(
 	function (a, b, c, d, e, f) {
 		return {$: 'LocalState', a: a, b: b, c: c, d: d, e: e, f: f};
 	});
 var $author$project$Terminal$Command$initialState = A6($author$project$Terminal$Command$LocalState, _List_Nil, _List_Nil, '', '', $elm$core$Maybe$Nothing, $elm$core$Maybe$Nothing);
-var $author$project$Repl$Worker$initialModel = A8($author$project$Global$State, $author$project$Extra$System$File$initialState, $author$project$Builder$Http$initialState, $author$project$Builder$Elm$Details$initialState, $author$project$Builder$Build$initialState, $author$project$Builder$Generate$initialState, $author$project$Terminal$Command$initialState, $author$project$Terminal$Repl$initialLocalState, $author$project$Repl$Worker$initialLocalState);
+var $author$project$Repl$Worker$initialModel = function (_v0) {
+	return A8($author$project$Global$State, $author$project$Extra$System$Config$initialState, $author$project$Extra$System$Dir$initialState, $author$project$Builder$Elm$Details$initialState, $author$project$Builder$Build$initialState, $author$project$Builder$Generate$initialState, $author$project$Terminal$Command$initialState, $author$project$Terminal$Repl$initialLocalState, $author$project$Repl$Worker$initialLocalState);
+};
+var $author$project$Extra$System$Config$lensAdditionalSrcDirs = {
+	getter: function (_v0) {
+		var _v1 = _v0.a;
+		var x = _v1.c;
+		return x;
+	},
+	setter: F2(
+		function (x, _v2) {
+			var _v3 = _v2.a;
+			var ai = _v3.a;
+			var bi = _v3.b;
+			var b = _v2.b;
+			var c = _v2.c;
+			var d = _v2.d;
+			var e = _v2.e;
+			var f = _v2.f;
+			var g = _v2.g;
+			var h = _v2.h;
+			return A8(
+				$author$project$Global$State,
+				A3($author$project$Extra$System$Config$LocalState, ai, bi, x),
+				b,
+				c,
+				d,
+				e,
+				f,
+				g,
+				h);
+		})
+};
+var $author$project$Extra$System$IO$Pure = function (a) {
+	return {$: 'Pure', a: a};
+};
+var $author$project$Extra$System$IO$modify = F2(
+	function (f, s) {
+		return _Utils_Tuple2(
+			$author$project$Extra$System$IO$Pure(_Utils_Tuple0),
+			f(s));
+	});
+var $author$project$Extra$Type$Lens$modify = F3(
+	function (lens, f, a) {
+		return A2(
+			lens.setter,
+			f(
+				lens.getter(a)),
+			a);
+	});
+var $author$project$Extra$System$IO$modifyLens = F2(
+	function (lens, f) {
+		return $author$project$Extra$System$IO$modify(
+			A2($author$project$Extra$Type$Lens$modify, lens, f));
+	});
+var $author$project$Extra$System$Config$addAdditionalSrcDir = function (srcDir) {
+	return A2(
+		$author$project$Extra$System$IO$modifyLens,
+		$author$project$Extra$System$Config$lensAdditionalSrcDirs,
+		$elm$core$List$cons(srcDir));
+};
 var $author$project$Extra$System$IO$ImpureCmd = function (a) {
 	return {$: 'ImpureCmd', a: a};
 };
@@ -3481,10 +3578,10 @@ var $author$project$Repl$Worker$sendToClientPort = _Platform_outgoingPort(
 				]));
 	});
 var $author$project$Repl$Worker$clientToWorkerLowLevelSend = $author$project$Repl$Api$clientToWorkerLowLevelSendFun($author$project$Repl$Worker$sendToClientPort);
-var $author$project$Extra$System$File$Absolute = function (a) {
+var $author$project$Extra$System$Dir$Absolute = function (a) {
 	return {$: 'Absolute', a: a};
 };
-var $author$project$Extra$System$File$Relative = function (a) {
+var $author$project$Extra$System$Dir$Relative = function (a) {
 	return {$: 'Relative', a: a};
 };
 var $elm$core$String$length = _String_length;
@@ -3566,7 +3663,7 @@ var $elm$core$List$filter = F2(
 var $author$project$Extra$Type$List$filter = $elm$core$List$filter;
 var $elm$core$Basics$neq = _Utils_notEqual;
 var $author$project$Extra$Type$List$reverse = $elm$core$List$reverse;
-var $author$project$Extra$System$File$fromStringHelper = F2(
+var $author$project$Extra$System$Dir$fromStringHelper = F2(
 	function (constructor, string) {
 		return constructor(
 			$author$project$Extra$Type$List$reverse(
@@ -3578,11 +3675,11 @@ var $author$project$Extra$System$File$fromStringHelper = F2(
 					A2($elm$core$String$split, '/', string))));
 	});
 var $elm$core$String$startsWith = _String_startsWith;
-var $author$project$Extra$System$File$fromString = function (string) {
+var $author$project$Extra$System$Dir$fromString = function (string) {
 	return A2($elm$core$String$startsWith, '/', string) ? A2(
-		$author$project$Extra$System$File$fromStringHelper,
-		$author$project$Extra$System$File$Absolute,
-		A2($elm$core$String$dropLeft, 1, string)) : A2($author$project$Extra$System$File$fromStringHelper, $author$project$Extra$System$File$Relative, string);
+		$author$project$Extra$System$Dir$fromStringHelper,
+		$author$project$Extra$System$Dir$Absolute,
+		A2($elm$core$String$dropLeft, 1, string)) : A2($author$project$Extra$System$Dir$fromStringHelper, $author$project$Extra$System$Dir$Relative, string);
 };
 var $author$project$Terminal$Repl$Lines = F2(
 	function (a, b) {
@@ -3624,9 +3721,6 @@ var $author$project$Repl$Worker$addLine = F2(
 		}
 	});
 var $author$project$Extra$Type$List$foldr = $elm$core$List$foldr;
-var $author$project$Extra$System$IO$Pure = function (a) {
-	return {$: 'Pure', a: a};
-};
 var $author$project$Extra$System$IO$return = F2(
 	function (a, s) {
 		return _Utils_Tuple2(
@@ -3691,12 +3785,6 @@ var $author$project$Terminal$Command$lensStdOut = {
 				h);
 		})
 };
-var $author$project$Extra$System$IO$modify = F2(
-	function (f, s) {
-		return _Utils_Tuple2(
-			$author$project$Extra$System$IO$Pure(_Utils_Tuple0),
-			f(s));
-	});
 var $author$project$Extra$System$IO$putLens = F2(
 	function (lens, s1) {
 		return $author$project$Extra$System$IO$modify(
@@ -3870,12 +3958,8 @@ var $author$project$Compiler$Parse$Primitives$State = F6(
 	function (a, b, c, d, e, f) {
 		return {$: 'State', a: a, b: b, c: c, d: d, e: e, f: f};
 	});
-var $author$project$Compiler$Parse$Space$EndlessMultiComment = {$: 'EndlessMultiComment'};
 var $author$project$Compiler$Parse$Space$Good = {$: 'Good'};
 var $author$project$Compiler$Parse$Space$HasTab = {$: 'HasTab'};
-var $author$project$Compiler$Parse$Space$MultiEndless = {$: 'MultiEndless'};
-var $author$project$Compiler$Parse$Space$MultiGood = {$: 'MultiGood'};
-var $author$project$Compiler$Parse$Space$MultiTab = {$: 'MultiTab'};
 var $elm$core$Basics$ge = _Utils_ge;
 var $author$project$Compiler$Parse$Primitives$getCharWidth = function (word) {
 	return (word > 65535) ? 2 : 1;
@@ -3915,6 +3999,43 @@ var $author$project$Compiler$Parse$Primitives$unsafeIndex = F2(
 				$elm$core$String$uncons(
 					A2($elm$core$String$dropLeft, pos, src))));
 	});
+var $author$project$Compiler$Parse$Space$eatLineComment = F5(
+	function (src, pos, end, row, col) {
+		eatLineComment:
+		while (true) {
+			if (_Utils_cmp(pos, end) > -1) {
+				return _Utils_Tuple2(
+					_Utils_Tuple2(
+						$elm$core$Maybe$Just($author$project$Compiler$Parse$Space$Good),
+						pos),
+					_Utils_Tuple2(row, col));
+			} else {
+				var word = A2($author$project$Compiler$Parse$Primitives$unsafeIndex, src, pos);
+				if (word === 10) {
+					return _Utils_Tuple2(
+						_Utils_Tuple2($elm$core$Maybe$Nothing, pos + 1),
+						_Utils_Tuple2(row + 1, 1));
+				} else {
+					var newPos = pos + $author$project$Compiler$Parse$Primitives$getCharWidth(word);
+					var $temp$src = src,
+						$temp$pos = newPos,
+						$temp$end = end,
+						$temp$row = row,
+						$temp$col = col + 1;
+					src = $temp$src;
+					pos = $temp$pos;
+					end = $temp$end;
+					row = $temp$row;
+					col = $temp$col;
+					continue eatLineComment;
+				}
+			}
+		}
+	});
+var $author$project$Compiler$Parse$Space$EndlessMultiComment = {$: 'EndlessMultiComment'};
+var $author$project$Compiler$Parse$Space$MultiEndless = {$: 'MultiEndless'};
+var $author$project$Compiler$Parse$Space$MultiGood = {$: 'MultiGood'};
+var $author$project$Compiler$Parse$Space$MultiTab = {$: 'MultiTab'};
 var $author$project$Compiler$Parse$Primitives$isWord = F4(
 	function (src, pos, end, word) {
 		return (_Utils_cmp(pos, end) < 0) && _Utils_eq(
@@ -4008,73 +4129,56 @@ var $author$project$Compiler$Parse$Space$eatMultiCommentHelp = F6(
 			}
 		}
 	});
-var $author$project$Compiler$Parse$Space$eatLineComment = F5(
-	function (src, pos, end, row, col) {
-		eatLineComment:
-		while (true) {
-			if (_Utils_cmp(pos, end) > -1) {
-				return _Utils_Tuple2(
-					_Utils_Tuple2($author$project$Compiler$Parse$Space$Good, pos),
-					_Utils_Tuple2(row, col));
-			} else {
-				var word = A2($author$project$Compiler$Parse$Primitives$unsafeIndex, src, pos);
-				if (word === 10) {
-					return A5($author$project$Compiler$Parse$Space$eatSpaces, src, pos + 1, end, row + 1, 1);
-				} else {
-					var newPos = pos + $author$project$Compiler$Parse$Primitives$getCharWidth(word);
-					var $temp$src = src,
-						$temp$pos = newPos,
-						$temp$end = end,
-						$temp$row = row,
-						$temp$col = col + 1;
-					src = $temp$src;
-					pos = $temp$pos;
-					end = $temp$end;
-					row = $temp$row;
-					col = $temp$col;
-					continue eatLineComment;
-				}
-			}
-		}
-	});
 var $author$project$Compiler$Parse$Space$eatMultiComment = F5(
 	function (src, pos, end, row, col) {
 		var pos2 = pos + 2;
 		var pos1 = pos + 1;
 		if (_Utils_cmp(pos2, end) > -1) {
 			return _Utils_Tuple2(
-				_Utils_Tuple2($author$project$Compiler$Parse$Space$Good, pos),
+				_Utils_Tuple2(
+					$elm$core$Maybe$Just($author$project$Compiler$Parse$Space$Good),
+					pos),
 				_Utils_Tuple2(row, col));
 		} else {
 			if (A2($author$project$Compiler$Parse$Primitives$unsafeIndex, src, pos1) === 45) {
 				if (A2($author$project$Compiler$Parse$Primitives$unsafeIndex, src, pos2) === 124) {
 					return _Utils_Tuple2(
-						_Utils_Tuple2($author$project$Compiler$Parse$Space$Good, pos),
+						_Utils_Tuple2(
+							$elm$core$Maybe$Just($author$project$Compiler$Parse$Space$Good),
+							pos),
 						_Utils_Tuple2(row, col));
 				} else {
-					var _v1 = A6($author$project$Compiler$Parse$Space$eatMultiCommentHelp, src, pos2, end, row, col + 2, 1);
-					var _v2 = _v1.a;
-					var status = _v2.a;
-					var newPos = _v2.b;
-					var _v3 = _v1.b;
-					var newRow = _v3.a;
-					var newCol = _v3.b;
+					var _v0 = A6($author$project$Compiler$Parse$Space$eatMultiCommentHelp, src, pos2, end, row, col + 2, 1);
+					var _v1 = _v0.a;
+					var status = _v1.a;
+					var newPos = _v1.b;
+					var _v2 = _v0.b;
+					var newRow = _v2.a;
+					var newCol = _v2.b;
 					switch (status.$) {
 						case 'MultiGood':
-							return A5($author$project$Compiler$Parse$Space$eatSpaces, src, newPos, end, newRow, newCol);
+							return _Utils_Tuple2(
+								_Utils_Tuple2($elm$core$Maybe$Nothing, newPos),
+								_Utils_Tuple2(newRow, newCol));
 						case 'MultiTab':
 							return _Utils_Tuple2(
-								_Utils_Tuple2($author$project$Compiler$Parse$Space$HasTab, newPos),
+								_Utils_Tuple2(
+									$elm$core$Maybe$Just($author$project$Compiler$Parse$Space$HasTab),
+									newPos),
 								_Utils_Tuple2(newRow, newCol));
 						default:
 							return _Utils_Tuple2(
-								_Utils_Tuple2($author$project$Compiler$Parse$Space$EndlessMultiComment, pos),
+								_Utils_Tuple2(
+									$elm$core$Maybe$Just($author$project$Compiler$Parse$Space$EndlessMultiComment),
+									pos),
 								_Utils_Tuple2(row, col));
 					}
 				}
 			} else {
 				return _Utils_Tuple2(
-					_Utils_Tuple2($author$project$Compiler$Parse$Space$Good, pos),
+					_Utils_Tuple2(
+						$elm$core$Maybe$Just($author$project$Compiler$Parse$Space$Good),
+						pos),
 					_Utils_Tuple2(row, col));
 			}
 		}
@@ -4115,12 +4219,64 @@ var $author$project$Compiler$Parse$Space$eatSpaces = F5(
 						col = $temp$col;
 						continue eatSpaces;
 					case 123:
-						return A5($author$project$Compiler$Parse$Space$eatMultiComment, src, pos, end, row, col);
+						var _v1 = A5($author$project$Compiler$Parse$Space$eatMultiComment, src, pos, end, row, col);
+						var _v2 = _v1.a;
+						var maybeStatus = _v2.a;
+						var newPos = _v2.b;
+						var _v3 = _v1.b;
+						var newRow = _v3.a;
+						var newCol = _v3.b;
+						if (maybeStatus.$ === 'Nothing') {
+							var $temp$src = src,
+								$temp$pos = newPos,
+								$temp$end = end,
+								$temp$row = newRow,
+								$temp$col = newCol;
+							src = $temp$src;
+							pos = $temp$pos;
+							end = $temp$end;
+							row = $temp$row;
+							col = $temp$col;
+							continue eatSpaces;
+						} else {
+							var status = maybeStatus.a;
+							return _Utils_Tuple2(
+								_Utils_Tuple2(status, newPos),
+								_Utils_Tuple2(newRow, newCol));
+						}
 					case 45:
 						var pos1 = pos + 1;
-						return ((_Utils_cmp(pos1, end) < 0) && (A2($author$project$Compiler$Parse$Primitives$unsafeIndex, src, pos1) === 45)) ? A5($author$project$Compiler$Parse$Space$eatLineComment, src, pos + 2, end, row, col + 2) : _Utils_Tuple2(
-							_Utils_Tuple2($author$project$Compiler$Parse$Space$Good, pos),
-							_Utils_Tuple2(row, col));
+						if ((_Utils_cmp(pos1, end) < 0) && (A2($author$project$Compiler$Parse$Primitives$unsafeIndex, src, pos1) === 45)) {
+							var _v5 = A5($author$project$Compiler$Parse$Space$eatLineComment, src, pos + 2, end, row, col + 2);
+							var _v6 = _v5.a;
+							var maybeStatus = _v6.a;
+							var newPos = _v6.b;
+							var _v7 = _v5.b;
+							var newRow = _v7.a;
+							var newCol = _v7.b;
+							if (maybeStatus.$ === 'Nothing') {
+								var $temp$src = src,
+									$temp$pos = newPos,
+									$temp$end = end,
+									$temp$row = newRow,
+									$temp$col = newCol;
+								src = $temp$src;
+								pos = $temp$pos;
+								end = $temp$end;
+								row = $temp$row;
+								col = $temp$col;
+								continue eatSpaces;
+							} else {
+								var status = maybeStatus.a;
+								return _Utils_Tuple2(
+									_Utils_Tuple2(status, newPos),
+									_Utils_Tuple2(newRow, newCol));
+							}
+						} else {
+							return _Utils_Tuple2(
+								_Utils_Tuple2($author$project$Compiler$Parse$Space$Good, pos),
+								_Utils_Tuple2(row, col));
+						}
 					case 13:
 						var $temp$src = src,
 							$temp$pos = pos + 1,
@@ -22924,35 +23080,35 @@ var $author$project$Compiler$Elm$Interface$bInterface = A7(
 	A2($author$project$Extra$Data$Binary$bMap, $author$project$Compiler$Data$Name$bName, $author$project$Compiler$Elm$Interface$bUnion),
 	A2($author$project$Extra$Data$Binary$bMap, $author$project$Compiler$Data$Name$bName, $author$project$Compiler$Elm$Interface$bAlias),
 	A2($author$project$Extra$Data$Binary$bMap, $author$project$Compiler$Data$Name$bName, $author$project$Compiler$Elm$Interface$bBinop));
-var $author$project$Extra$System$File$modifyNames = F2(
+var $author$project$Extra$System$Dir$modifyNames = F2(
 	function (path, f) {
 		if (path.$ === 'Absolute') {
 			var names = path.a;
-			return $author$project$Extra$System$File$Absolute(
+			return $author$project$Extra$System$Dir$Absolute(
 				f(names));
 		} else {
 			var names = path.a;
-			return $author$project$Extra$System$File$Relative(
+			return $author$project$Extra$System$Dir$Relative(
 				f(names));
 		}
 	});
-var $author$project$Extra$System$File$addName = F2(
+var $author$project$Extra$System$Dir$addName = F2(
 	function (path, name) {
 		return A2(
-			$author$project$Extra$System$File$modifyNames,
+			$author$project$Extra$System$Dir$modifyNames,
 			path,
 			function (names) {
 				return A2($elm$core$List$cons, name, names);
 			});
 	});
-var $author$project$Extra$System$File$addNames = F2(
+var $author$project$Extra$System$Dir$addNames = F2(
 	function (path, names) {
-		return A3($author$project$Extra$Type$List$foldl, $author$project$Extra$System$File$addName, path, names);
+		return A3($author$project$Extra$Type$List$foldl, $author$project$Extra$System$Dir$addName, path, names);
 	});
 var $author$project$Builder$Stuff$compilerVersion = $author$project$Compiler$Elm$Version$toChars($author$project$Compiler$Elm$Version$compiler);
 var $author$project$Builder$Stuff$stuff = function (root) {
 	return A2(
-		$author$project$Extra$System$File$addNames,
+		$author$project$Extra$System$Dir$addNames,
 		root,
 		_List_fromArray(
 			['elm-stuff', $author$project$Builder$Stuff$compilerVersion]));
@@ -22970,7 +23126,7 @@ var $author$project$Compiler$Elm$ModuleName$toHyphenName = function (name) {
 var $author$project$Builder$Stuff$toArtifactPath = F3(
 	function (root, name, ext) {
 		return A2(
-			$author$project$Extra$System$File$addName,
+			$author$project$Extra$System$Dir$addName,
 			$author$project$Builder$Stuff$stuff(root),
 			$author$project$Compiler$Elm$ModuleName$toHyphenName(name) + ('.' + ext));
 	});
@@ -23086,13 +23242,13 @@ var $author$project$Extra$System$MVar$read = F2(
 				}
 			});
 	});
-var $author$project$Extra$System$File$BytesContent = function (a) {
+var $author$project$Extra$System$Dir$BytesContent = function (a) {
 	return {$: 'BytesContent', a: a};
 };
-var $author$project$Extra$System$File$MountedContent = function (a) {
+var $author$project$Extra$System$Dir$MountedContent = function (a) {
 	return {$: 'MountedContent', a: a};
 };
-var $author$project$Extra$System$File$getFileContent = function (maybeContent) {
+var $author$project$Extra$System$Dir$getFileContent = function (maybeContent) {
 	if (maybeContent.$ === 'Just') {
 		if (maybeContent.a.$ === 'BytesContent') {
 			var bytes = maybeContent.a.a;
@@ -23205,20 +23361,19 @@ var $elm$core$Task$perform = F2(
 			$elm$core$Task$Perform(
 				A2($elm$core$Task$map, toMessage, task)));
 	});
-var $author$project$Extra$System$File$getTime = $author$project$Extra$System$IO$liftCmd(
+var $author$project$Extra$System$Dir$getTime = $author$project$Extra$System$IO$liftCmd(
 	A2($elm$core$Task$perform, $elm$core$Basics$identity, $elm$time$Time$now));
-var $author$project$Extra$System$File$lensRoot = {
+var $author$project$Extra$System$Dir$lensRoot = {
 	getter: function (_v0) {
-		var _v1 = _v0.a;
+		var _v1 = _v0.b;
 		var x = _v1.a;
 		return x;
 	},
 	setter: F2(
 		function (x, _v2) {
-			var _v3 = _v2.a;
+			var a = _v2.a;
+			var _v3 = _v2.b;
 			var bi = _v3.b;
-			var ci = _v3.c;
-			var b = _v2.b;
 			var c = _v2.c;
 			var d = _v2.d;
 			var e = _v2.e;
@@ -23227,8 +23382,8 @@ var $author$project$Extra$System$File$lensRoot = {
 			var h = _v2.h;
 			return A8(
 				$author$project$Global$State,
-				A3($author$project$Extra$System$File$FileSystem, x, bi, ci),
-				b,
+				a,
+				A2($author$project$Extra$System$Dir$LocalState, x, bi),
 				c,
 				d,
 				e,
@@ -23237,32 +23392,31 @@ var $author$project$Extra$System$File$lensRoot = {
 				h);
 		})
 };
-var $author$project$Extra$System$File$combine = F2(
+var $author$project$Extra$System$Dir$combine = F2(
 	function (bPath, aPath) {
 		if (aPath.$ === 'Absolute') {
 			return aPath;
 		} else {
 			var aNames = aPath.a;
 			return A2(
-				$author$project$Extra$System$File$modifyNames,
+				$author$project$Extra$System$Dir$modifyNames,
 				bPath,
 				function (bNames) {
 					return _Utils_ap(aNames, bNames);
 				});
 		}
 	});
-var $author$project$Extra$System$File$lensCwd = {
+var $author$project$Extra$System$Dir$lensCwd = {
 	getter: function (_v0) {
-		var _v1 = _v0.a;
+		var _v1 = _v0.b;
 		var x = _v1.b;
 		return x;
 	},
 	setter: F2(
 		function (x, _v2) {
-			var _v3 = _v2.a;
+			var a = _v2.a;
+			var _v3 = _v2.b;
 			var ai = _v3.a;
-			var ci = _v3.c;
-			var b = _v2.b;
 			var c = _v2.c;
 			var d = _v2.d;
 			var e = _v2.e;
@@ -23271,8 +23425,8 @@ var $author$project$Extra$System$File$lensCwd = {
 			var h = _v2.h;
 			return A8(
 				$author$project$Global$State,
-				A3($author$project$Extra$System$File$FileSystem, ai, x, ci),
-				b,
+				a,
+				A2($author$project$Extra$System$Dir$LocalState, ai, x),
 				c,
 				d,
 				e,
@@ -23281,29 +23435,29 @@ var $author$project$Extra$System$File$lensCwd = {
 				h);
 		})
 };
-var $author$project$Extra$System$File$getCurrentDirectory = A2(
+var $author$project$Extra$System$Dir$getCurrentDirectory = A2(
 	$author$project$Extra$System$IO$rmap,
 	$author$project$Extra$System$IO$get,
 	function (s) {
-		return $author$project$Extra$System$File$Absolute(
-			$author$project$Extra$System$File$lensCwd.getter(s));
+		return $author$project$Extra$System$Dir$Absolute(
+			$author$project$Extra$System$Dir$lensCwd.getter(s));
 	});
-var $author$project$Extra$System$File$makeAbsolute = function (path) {
+var $author$project$Extra$System$Dir$makeAbsolute = function (path) {
 	if (path.$ === 'Absolute') {
 		return $author$project$Extra$System$IO$return(path);
 	} else {
 		return A2(
 			$author$project$Extra$System$IO$rmap,
-			$author$project$Extra$System$File$getCurrentDirectory,
+			$author$project$Extra$System$Dir$getCurrentDirectory,
 			function (cwd) {
-				return A2($author$project$Extra$System$File$combine, cwd, path);
+				return A2($author$project$Extra$System$Dir$combine, cwd, path);
 			});
 	}
 };
-var $author$project$Extra$System$File$DirectoryEntry = function (a) {
+var $author$project$Extra$System$Dir$DirectoryEntry = function (a) {
 	return {$: 'DirectoryEntry', a: a};
 };
-var $author$project$Extra$System$File$getNames = function (path) {
+var $author$project$Extra$System$Dir$getNames = function (path) {
 	if (path.$ === 'Absolute') {
 		var names = path.a;
 		return names;
@@ -23312,7 +23466,7 @@ var $author$project$Extra$System$File$getNames = function (path) {
 		return names;
 	}
 };
-var $author$project$Extra$System$File$walkFileSystemPure = F5(
+var $author$project$Extra$System$Dir$walkFileSystemPure = F5(
 	function (createDirectories, filePath, now, callback, root) {
 		var up = F2(
 			function (directory, visited) {
@@ -23327,7 +23481,7 @@ var $author$project$Extra$System$File$walkFileSystemPure = F5(
 								fileName,
 								_Utils_Tuple2(
 									now,
-									$author$project$Extra$System$File$DirectoryEntry(changedDirectory)),
+									$author$project$Extra$System$Dir$DirectoryEntry(changedDirectory)),
 								parentDirectory);
 						}),
 					directory,
@@ -23420,18 +23574,18 @@ var $author$project$Extra$System$File$walkFileSystemPure = F5(
 			down,
 			_List_Nil,
 			$author$project$Extra$Type$List$reverse(
-				$author$project$Extra$System$File$getNames(filePath)),
+				$author$project$Extra$System$Dir$getNames(filePath)),
 			root);
 	});
-var $author$project$Extra$System$File$walkFileSystem = F3(
+var $author$project$Extra$System$Dir$walkFileSystem = F3(
 	function (createDirectories, filePath, callback) {
 		return A2(
 			$author$project$Extra$System$IO$bind,
 			A3(
 				$author$project$Extra$System$IO$liftA2,
 				$elm$core$Tuple$pair,
-				$author$project$Extra$System$File$makeAbsolute(filePath),
-				$author$project$Extra$System$File$getTime),
+				$author$project$Extra$System$Dir$makeAbsolute(filePath),
+				$author$project$Extra$System$Dir$getTime),
 			function (_v0) {
 				var absolutePath = _v0.a;
 				var now = _v0.b;
@@ -23439,25 +23593,25 @@ var $author$project$Extra$System$File$walkFileSystem = F3(
 					$author$project$Extra$System$IO$bind,
 					$author$project$Extra$System$IO$get,
 					function (s) {
-						var root = $author$project$Extra$System$File$lensRoot.getter(s);
-						var _v1 = A5($author$project$Extra$System$File$walkFileSystemPure, createDirectories, absolutePath, now, callback, root);
+						var root = $author$project$Extra$System$Dir$lensRoot.getter(s);
+						var _v1 = A5($author$project$Extra$System$Dir$walkFileSystemPure, createDirectories, absolutePath, now, callback, root);
 						var result = _v1.a;
 						var newRoot = _v1.b;
 						return A2(
 							$author$project$Extra$System$IO$rmap,
-							A2($author$project$Extra$System$IO$putLens, $author$project$Extra$System$File$lensRoot, newRoot),
+							A2($author$project$Extra$System$IO$putLens, $author$project$Extra$System$Dir$lensRoot, newRoot),
 							function (_v2) {
 								return result;
 							});
 					});
 			});
 	});
-var $author$project$Extra$System$File$readFile = function (filePath) {
+var $author$project$Extra$System$Dir$readFile = function (filePath) {
 	return A2(
 		$author$project$Extra$System$IO$andThen,
-		$author$project$Extra$System$File$getFileContent,
+		$author$project$Extra$System$Dir$getFileContent,
 		A3(
-			$author$project$Extra$System$File$walkFileSystem,
+			$author$project$Extra$System$Dir$walkFileSystem,
 			false,
 			filePath,
 			F2(
@@ -23474,14 +23628,14 @@ var $author$project$Extra$System$File$readFile = function (filePath) {
 											var _v3 = _v2.c.a;
 											var contents = _v3.b.a;
 											return $elm$core$Maybe$Just(
-												$author$project$Extra$System$File$BytesContent(contents));
+												$author$project$Extra$System$Dir$BytesContent(contents));
 										case 'MountedFileEntry':
 											var _v4 = maybeNode.a;
 											var _v5 = _v4.c.a;
 											var _v6 = _v5.b;
 											var io = _v6.b;
 											return $elm$core$Maybe$Just(
-												$author$project$Extra$System$File$MountedContent(io));
+												$author$project$Extra$System$Dir$MountedContent(io));
 										default:
 											break _v1$2;
 									}
@@ -23527,7 +23681,7 @@ var $author$project$Extra$Data$Binary$Get$runGetOrFail = F2(
 					'binary encoding was corrupted'));
 		}
 	});
-var $author$project$Extra$System$File$toString = function (path) {
+var $author$project$Extra$System$Dir$toString = function (path) {
 	if (path.$ === 'Absolute') {
 		var names = path.a;
 		return '/' + A2(
@@ -23558,14 +23712,14 @@ var $author$project$Extra$Data$Binary$decodeFileOrFail = F2(
 					return $author$project$Extra$Type$Either$Left(
 						_Utils_Tuple2(
 							0,
-							'File not found: ' + $author$project$Extra$System$File$toString(path)));
+							'File not found: ' + $author$project$Extra$System$Dir$toString(path)));
 				}
 			},
-			$author$project$Extra$System$File$readFile(path));
+			$author$project$Extra$System$Dir$readFile(path));
 	});
-var $author$project$Extra$System$File$doesFileExist = function (filePath) {
+var $author$project$Extra$System$Dir$doesFileExist = function (filePath) {
 	return A3(
-		$author$project$Extra$System$File$walkFileSystem,
+		$author$project$Extra$System$Dir$walkFileSystem,
 		false,
 		filePath,
 		F2(
@@ -23611,7 +23765,7 @@ var $author$project$Builder$File$readBinary = F2(
 	function (binA, path) {
 		return A2(
 			$author$project$Extra$System$IO$bind,
-			$author$project$Extra$System$File$doesFileExist(path),
+			$author$project$Extra$System$Dir$doesFileExist(path),
 			function (pathExists) {
 				return pathExists ? A2(
 					$author$project$Extra$System$IO$bind,
@@ -23633,7 +23787,7 @@ var $author$project$Builder$File$readBinary = F2(
 									_List_fromArray(
 										[
 											'+-------------------------------------------------------------------------------',
-											'|  Corrupt File: ' + $author$project$Extra$System$File$toString(path),
+											'|  Corrupt File: ' + $author$project$Extra$System$Dir$toString(path),
 											'|   Byte Offset: ' + $elm$core$String$fromInt(offset),
 											'|       Message: ' + message,
 											'|',
@@ -45269,10 +45423,10 @@ var $author$project$Builder$Build$projectTypeToPkg = function (projectType) {
 		return $author$project$Compiler$Elm$Package$dummyName;
 	}
 };
-var $author$project$Extra$System$File$createDirectoryIfMissing = F2(
+var $author$project$Extra$System$Dir$createDirectoryIfMissing = F2(
 	function (createParents, filePath) {
 		return A3(
-			$author$project$Extra$System$File$walkFileSystem,
+			$author$project$Extra$System$Dir$walkFileSystem,
 			createParents,
 			filePath,
 			F2(
@@ -45291,7 +45445,7 @@ var $author$project$Extra$System$File$createDirectoryIfMissing = F2(
 											fileName,
 											_Utils_Tuple2(
 												now,
-												$author$project$Extra$System$File$DirectoryEntry($author$project$Extra$Type$Map$empty)),
+												$author$project$Extra$System$Dir$DirectoryEntry($author$project$Extra$Type$Map$empty)),
 											directory));
 								} else {
 									return $elm$core$Maybe$Nothing;
@@ -45301,7 +45455,7 @@ var $author$project$Extra$System$File$createDirectoryIfMissing = F2(
 						_Utils_Tuple0);
 				}));
 	});
-var $author$project$Extra$System$File$splitLastName = function (path) {
+var $author$project$Extra$System$Dir$splitLastName = function (path) {
 	_v0$2:
 	while (true) {
 		if (path.$ === 'Absolute') {
@@ -45310,7 +45464,7 @@ var $author$project$Extra$System$File$splitLastName = function (path) {
 				var name = _v1.a;
 				var rest = _v1.b;
 				return _Utils_Tuple2(
-					$author$project$Extra$System$File$Absolute(rest),
+					$author$project$Extra$System$Dir$Absolute(rest),
 					name);
 			} else {
 				break _v0$2;
@@ -45321,7 +45475,7 @@ var $author$project$Extra$System$File$splitLastName = function (path) {
 				var name = _v2.a;
 				var rest = _v2.b;
 				return _Utils_Tuple2(
-					$author$project$Extra$System$File$Relative(rest),
+					$author$project$Extra$System$Dir$Relative(rest),
 					name);
 			} else {
 				break _v0$2;
@@ -45330,18 +45484,18 @@ var $author$project$Extra$System$File$splitLastName = function (path) {
 	}
 	return _Utils_Tuple2(path, '');
 };
-var $author$project$Extra$System$File$dropLastName = function (path) {
-	return $author$project$Extra$System$File$splitLastName(path).a;
+var $author$project$Extra$System$Dir$dropLastName = function (path) {
+	return $author$project$Extra$System$Dir$splitLastName(path).a;
 };
 var $elm$bytes$Bytes$Encode$encode = _Bytes_encode;
 var $author$project$Extra$Data$Binary$Put$runPut = $elm$bytes$Bytes$Encode$encode;
-var $author$project$Extra$System$File$FileEntry = function (a) {
+var $author$project$Extra$System$Dir$FileEntry = function (a) {
 	return {$: 'FileEntry', a: a};
 };
-var $author$project$Extra$System$File$writeFile = F2(
+var $author$project$Extra$System$Dir$writeFile = F2(
 	function (filePath, contents) {
 		return A3(
-			$author$project$Extra$System$File$walkFileSystem,
+			$author$project$Extra$System$Dir$walkFileSystem,
 			false,
 			filePath,
 			F2(
@@ -45362,7 +45516,7 @@ var $author$project$Extra$System$File$writeFile = F2(
 										fileName,
 										_Utils_Tuple2(
 											now,
-											$author$project$Extra$System$File$FileEntry(contents)),
+											$author$project$Extra$System$Dir$FileEntry(contents)),
 										directory)),
 								_Utils_Tuple0);
 						}
@@ -45374,17 +45528,17 @@ var $author$project$Extra$System$File$writeFile = F2(
 var $author$project$Extra$Data$Binary$encodeFile = F3(
 	function (binV, path, v) {
 		return A2(
-			$author$project$Extra$System$File$writeFile,
+			$author$project$Extra$System$Dir$writeFile,
 			path,
 			$author$project$Extra$Data$Binary$Put$runPut(
 				binV.put(v)));
 	});
 var $author$project$Builder$File$writeBinary = F3(
 	function (binA, path, value) {
-		var dir = $author$project$Extra$System$File$dropLastName(path);
+		var dir = $author$project$Extra$System$Dir$dropLastName(path);
 		return A2(
 			$author$project$Extra$System$IO$bind,
-			A2($author$project$Extra$System$File$createDirectoryIfMissing, true, dir),
+			A2($author$project$Extra$System$Dir$createDirectoryIfMissing, true, dir),
 			function (_v0) {
 				return A3($author$project$Extra$Data$Binary$encodeFile, binA, path, value);
 			});
@@ -46693,7 +46847,7 @@ var $author$project$Builder$File$readUtf8 = function (path) {
 			$elm$core$Basics$composeR,
 			$elm$core$Maybe$andThen($author$project$Builder$File$bytesToString),
 			$elm$core$Maybe$withDefault('')),
-		$author$project$Extra$System$File$readFile(path));
+		$author$project$Extra$System$Dir$readFile(path));
 };
 var $author$project$Compiler$Elm$Package$toChars = function (_v0) {
 	var author = _v0.a;
@@ -46935,8 +47089,8 @@ var $author$project$Builder$Build$checkModule = F6(
 					return _Debug_todo(
 						'Builder.Build',
 						{
-							start: {line: 494, column: 28},
-							end: {line: 494, column: 38}
+							start: {line: 498, column: 28},
+							end: {line: 498, column: 38}
 						})(
 						'mistakenly seeing private interface for ' + ($author$project$Compiler$Elm$Package$toChars(home) + (' ' + $author$project$Compiler$Elm$ModuleName$toChars(name))));
 				}
@@ -46985,23 +47139,23 @@ var $author$project$Builder$Build$SForeign = function (a) {
 	return {$: 'SForeign', a: a};
 };
 var $author$project$Builder$Build$SKernel = {$: 'SKernel'};
-var $author$project$Extra$System$File$addExtension = F2(
+var $author$project$Extra$System$Dir$addExtension = F2(
 	function (path, extension) {
-		var _v0 = $author$project$Extra$System$File$splitLastName(path);
+		var _v0 = $author$project$Extra$System$Dir$splitLastName(path);
 		var parent = _v0.a;
 		var name = _v0.b;
-		return A2($author$project$Extra$System$File$addName, parent, name + ('.' + extension));
+		return A2($author$project$Extra$System$Dir$addName, parent, name + ('.' + extension));
 	});
 var $author$project$Builder$Build$addRelative = F2(
 	function (_v0, segments) {
 		var srcDir = _v0.a;
 		return A2(
-			$author$project$Extra$System$File$addExtension,
-			A2($author$project$Extra$System$File$addNames, srcDir, segments),
+			$author$project$Extra$System$Dir$addExtension,
+			A2($author$project$Extra$System$Dir$addNames, srcDir, segments),
 			'elm');
 	});
 var $author$project$Builder$File$exists = function (path) {
-	return $author$project$Extra$System$File$doesFileExist(path);
+	return $author$project$Extra$System$Dir$doesFileExist(path);
 };
 var $author$project$Extra$Type$List$filterM = F3(
 	function (pPure, pLiftA2, predicate) {
@@ -47065,9 +47219,9 @@ var $author$project$Extra$Type$Map$fromKeys = F2(
 var $author$project$Builder$File$Time = function (a) {
 	return {$: 'Time', a: a};
 };
-var $author$project$Extra$System$File$getModificationTime = function (path) {
+var $author$project$Extra$System$Dir$getModificationTime = function (path) {
 	return A3(
-		$author$project$Extra$System$File$walkFileSystem,
+		$author$project$Extra$System$Dir$walkFileSystem,
 		false,
 		path,
 		F2(
@@ -47105,9 +47259,9 @@ var $author$project$Builder$File$getTime = function (path) {
 	return A2(
 		$author$project$Extra$System$IO$fmap,
 		$author$project$Builder$File$Time,
-		$author$project$Extra$System$File$getModificationTime(path));
+		$author$project$Extra$System$Dir$getModificationTime(path));
 };
-var $author$project$Extra$System$File$makeRelativeHelper = F2(
+var $author$project$Extra$System$Dir$makeRelativeHelper = F2(
 	function (baseNames, pathNames) {
 		makeRelativeHelper:
 		while (true) {
@@ -47133,16 +47287,16 @@ var $author$project$Extra$System$File$makeRelativeHelper = F2(
 			}
 		}
 	});
-var $author$project$Extra$System$File$makeRelative = F2(
+var $author$project$Extra$System$Dir$makeRelative = F2(
 	function (base, path) {
 		var _v0 = _Utils_Tuple2(base, path);
 		if ((_v0.a.$ === 'Absolute') && (_v0.b.$ === 'Absolute')) {
 			var baseNames = _v0.a.a;
 			var pathNames = _v0.b.a;
-			return $author$project$Extra$System$File$Relative(
+			return $author$project$Extra$System$Dir$Relative(
 				$author$project$Extra$Type$List$reverse(
 					A2(
-						$author$project$Extra$System$File$makeRelativeHelper,
+						$author$project$Extra$System$Dir$makeRelativeHelper,
 						$author$project$Extra$Type$List$reverse(baseNames),
 						$author$project$Extra$Type$List$reverse(pathNames))));
 		} else {
@@ -47172,9 +47326,9 @@ var $author$project$Builder$Build$isEquivalent = F3(
 			});
 		return A2(
 			startsWith,
-			$author$project$Extra$System$File$getNames(
-				A2($author$project$Extra$System$File$makeRelative, root, path)),
-			$author$project$Extra$System$File$getNames(oldPath));
+			$author$project$Extra$System$Dir$getNames(
+				A2($author$project$Extra$System$Dir$makeRelative, root, path)),
+			$author$project$Extra$System$Dir$getNames(oldPath));
 	});
 var $author$project$Builder$Build$isMain = function (_v0) {
 	var _v1 = _v0.b;
@@ -47337,7 +47491,7 @@ var $author$project$Builder$Build$crawlFile = F6(
 		return A2(
 			$author$project$Extra$System$IO$bind,
 			$author$project$Builder$File$readUtf8(
-				A2($author$project$Extra$System$File$combine, root, path)),
+				A2($author$project$Extra$System$Dir$combine, root, path)),
 			function (source) {
 				var _v9 = A2($author$project$Compiler$Parse$Module$fromByteString, projectType, source);
 				if (_v9.$ === 'Left') {
@@ -47454,11 +47608,11 @@ var $author$project$Builder$Build$crawlModule = F5(
 							$author$project$Builder$Build$SBadImport(
 								A3(
 									$author$project$Compiler$Reporting$Error$Import$AmbiguousLocal,
-									A2($author$project$Extra$System$File$makeRelative, root, p1),
-									A2($author$project$Extra$System$File$makeRelative, root, p2),
+									A2($author$project$Extra$System$Dir$makeRelative, root, p1),
+									A2($author$project$Extra$System$Dir$makeRelative, root, p2),
 									A2(
 										$author$project$Extra$Type$List$map,
-										$author$project$Extra$System$File$makeRelative(root),
+										$author$project$Extra$System$Dir$makeRelative(root),
 										ps))));
 					}
 				} else {
@@ -47482,10 +47636,10 @@ var $author$project$Builder$Build$crawlModule = F5(
 							$author$project$Extra$System$IO$bind,
 							$author$project$Builder$File$exists(
 								A2(
-									$author$project$Extra$System$File$addExtension,
+									$author$project$Extra$System$Dir$addExtension,
 									A2(
-										$author$project$Extra$System$File$addNames,
-										$author$project$Extra$System$File$fromString('src'),
+										$author$project$Extra$System$Dir$addNames,
+										$author$project$Extra$System$Dir$fromString('src'),
 										$author$project$Compiler$Elm$ModuleName$toFileNames(name)),
 									'js')),
 							function (exists) {
@@ -47568,24 +47722,24 @@ var $author$project$Builder$Build$addInside = F3(
 				return _Debug_todo(
 					'Builder.Build',
 					{
-						start: {line: 1192, column: 28},
-						end: {line: 1192, column: 38}
+						start: {line: 1196, column: 28},
+						end: {line: 1196, column: 38}
 					})(
 					$author$project$Builder$Build$badInside(name));
 			case 'RProblem':
 				return _Debug_todo(
 					'Builder.Build',
 					{
-						start: {line: 1193, column: 28},
-						end: {line: 1193, column: 38}
+						start: {line: 1197, column: 28},
+						end: {line: 1197, column: 38}
 					})(
 					$author$project$Builder$Build$badInside(name));
 			case 'RBlocked':
 				return _Debug_todo(
 					'Builder.Build',
 					{
-						start: {line: 1194, column: 28},
-						end: {line: 1194, column: 38}
+						start: {line: 1198, column: 28},
+						end: {line: 1198, column: 38}
 					})(
 					$author$project$Builder$Build$badInside(name));
 			case 'RForeign':
@@ -47729,7 +47883,7 @@ var $author$project$Builder$Elm$Details$bInterfaces = A2($author$project$Extra$D
 var $author$project$Builder$Elm$Details$fork = $author$project$Extra$System$MVar$newWaiting;
 var $author$project$Builder$Stuff$interfaces = function (root) {
 	return A2(
-		$author$project$Extra$System$File$addName,
+		$author$project$Extra$System$Dir$addName,
 		$author$project$Builder$Stuff$stuff(root),
 		'i.dat');
 };
@@ -47754,6 +47908,9 @@ var $author$project$Builder$Elm$Details$loadInterfaces = F2(
 				});
 		}
 	});
+var $author$project$Builder$Build$AbsoluteSrcDir = function (a) {
+	return {$: 'AbsoluteSrcDir', a: a};
+};
 var $author$project$Compiler$Parse$Module$Application = {$: 'Application'};
 var $author$project$Builder$Build$Env = F6(
 	function (a, b, c, d, e, f) {
@@ -47765,9 +47922,7 @@ var $author$project$Compiler$Parse$Module$Package = function (a) {
 var $author$project$Builder$Elm$Outline$RelativeSrcDir = function (a) {
 	return {$: 'RelativeSrcDir', a: a};
 };
-var $author$project$Builder$Build$AbsoluteSrcDir = function (a) {
-	return {$: 'AbsoluteSrcDir', a: a};
-};
+var $author$project$Extra$System$Config$additionalSrcDirs = $author$project$Extra$System$IO$getLens($author$project$Extra$System$Config$lensAdditionalSrcDirs);
 var $author$project$Builder$Build$toAbsoluteSrcDir = F2(
 	function (root, srcDir) {
 		return A2(
@@ -47780,7 +47935,7 @@ var $author$project$Builder$Build$toAbsoluteSrcDir = F2(
 						return dir;
 					} else {
 						var dir = srcDir.a;
-						return A2($author$project$Extra$System$File$combine, root, dir);
+						return A2($author$project$Extra$System$Dir$combine, root, dir);
 					}
 				}()));
 	});
@@ -47806,8 +47961,32 @@ var $author$project$Builder$Build$makeEnv = F2(
 					$author$project$Builder$Build$toAbsoluteSrcDir(root),
 					$author$project$Compiler$Data$NonEmptyList$toList(givenSrcDirs)),
 				function (srcDirs) {
-					return $author$project$Extra$System$IO$return(
-						A6($author$project$Builder$Build$Env, root, $author$project$Compiler$Parse$Module$Application, srcDirs, buildID, locals, foreigns));
+					return A2(
+						$author$project$Extra$System$IO$bind,
+						$author$project$Extra$System$Config$additionalSrcDirs,
+						function (additionalSrcDirNames) {
+							var makeAbsolute = function (name) {
+								return A2(
+									$author$project$Extra$System$IO$fmap,
+									$author$project$Builder$Build$AbsoluteSrcDir,
+									$author$project$Extra$System$Dir$makeAbsolute(
+										$author$project$Extra$System$Dir$fromString(name)));
+							};
+							return A2(
+								$author$project$Extra$System$IO$bind,
+								A4($author$project$Extra$Type$List$traverse, $author$project$Extra$System$IO$pure, $author$project$Extra$System$IO$liftA2, makeAbsolute, additionalSrcDirNames),
+								function (additionalSrcDirs) {
+									return $author$project$Extra$System$IO$return(
+										A6(
+											$author$project$Builder$Build$Env,
+											root,
+											$author$project$Compiler$Parse$Module$Application,
+											_Utils_ap(srcDirs, additionalSrcDirs),
+											buildID,
+											locals,
+											foreigns));
+								});
+						});
 				});
 		} else {
 			var pkg = validOutline.a;
@@ -47817,7 +47996,7 @@ var $author$project$Builder$Build$makeEnv = F2(
 					$author$project$Builder$Build$toAbsoluteSrcDir,
 					root,
 					$author$project$Builder$Elm$Outline$RelativeSrcDir(
-						$author$project$Extra$System$File$fromString('src'))),
+						$author$project$Extra$System$Dir$fromString('src'))),
 				function (srcDir) {
 					return $author$project$Extra$System$IO$return(
 						A6(
@@ -47878,7 +48057,7 @@ var $author$project$Extra$Data$Binary$T6 = F6(
 	function (a, b, c, d, e, f) {
 		return {$: 'T6', a: a, b: b, c: c, d: d, e: e, f: f};
 	});
-var $author$project$Extra$Data$Binary$bPath = A3($author$project$Extra$Data$Binary$bin1, $author$project$Extra$System$File$fromString, $author$project$Extra$System$File$toString, $author$project$Extra$Data$Binary$bString);
+var $author$project$Extra$Data$Binary$bPath = A3($author$project$Extra$Data$Binary$bin1, $author$project$Extra$System$Dir$fromString, $author$project$Extra$System$Dir$toString, $author$project$Extra$Data$Binary$bString);
 var $author$project$Compiler$Elm$ModuleName$bRaw = $author$project$Compiler$Data$Name$bName;
 var $cmditch$elm_bigint$BigInt$BigIntNotNormalised = F2(
 	function (a, b) {
@@ -48856,7 +49035,7 @@ var $author$project$Builder$Elm$Details$bDetails = A7(
 	A2($author$project$Extra$Data$Binary$bMap, $author$project$Compiler$Elm$ModuleName$bRaw, $author$project$Builder$Elm$Details$bForeign));
 var $author$project$Builder$Stuff$details = function (root) {
 	return A2(
-		$author$project$Extra$System$File$addName,
+		$author$project$Extra$System$Dir$addName,
 		$author$project$Builder$Stuff$stuff(root),
 		'd.dat');
 };
@@ -50965,7 +51144,7 @@ var $author$project$Builder$Deps$Registry$post = F4(
 	});
 var $author$project$Builder$Stuff$registry = function (_v0) {
 	var dir = _v0.a;
-	return A2($author$project$Extra$System$File$addName, dir, 'registry.dat');
+	return A2($author$project$Extra$System$Dir$addName, dir, 'registry.dat');
 };
 var $author$project$Builder$Deps$Registry$fetch = F2(
 	function (manager, cache) {
@@ -50986,23 +51165,37 @@ var $author$project$Builder$Deps$Registry$fetch = F2(
 					});
 			});
 	});
-var $author$project$Builder$Http$lensPrefix = {
+var $author$project$Extra$System$Config$lensHttpPrefix = {
 	getter: function (_v0) {
-		var x = _v0.b;
+		var _v1 = _v0.a;
+		var x = _v1.a;
 		return x;
 	},
 	setter: F2(
-		function (x, _v1) {
-			var a = _v1.a;
-			var c = _v1.c;
-			var d = _v1.d;
-			var e = _v1.e;
-			var f = _v1.f;
-			var g = _v1.g;
-			var h = _v1.h;
-			return A8($author$project$Global$State, a, x, c, d, e, f, g, h);
+		function (x, _v2) {
+			var _v3 = _v2.a;
+			var bi = _v3.b;
+			var ci = _v3.c;
+			var b = _v2.b;
+			var c = _v2.c;
+			var d = _v2.d;
+			var e = _v2.e;
+			var f = _v2.f;
+			var g = _v2.g;
+			var h = _v2.h;
+			return A8(
+				$author$project$Global$State,
+				A3($author$project$Extra$System$Config$LocalState, x, bi, ci),
+				b,
+				c,
+				d,
+				e,
+				f,
+				g,
+				h);
 		})
 };
+var $author$project$Extra$System$Config$httpPrefix = $author$project$Extra$System$IO$getLens($author$project$Extra$System$Config$lensHttpPrefix);
 var $author$project$Extra$System$Http$Manager = function (a) {
 	return {$: 'Manager', a: a};
 };
@@ -51010,33 +51203,31 @@ var $author$project$Extra$System$Http$newManager = function (maybePrefix) {
 	return $author$project$Extra$System$IO$return(
 		$author$project$Extra$System$Http$Manager(maybePrefix));
 };
-var $author$project$Builder$Http$getManager = A2(
-	$author$project$Extra$System$IO$bind,
-	$author$project$Extra$System$IO$getLens($author$project$Builder$Http$lensPrefix),
-	$author$project$Extra$System$Http$newManager);
+var $author$project$Extra$System$Http$defaultManager = A2($author$project$Extra$System$IO$bind, $author$project$Extra$System$Config$httpPrefix, $author$project$Extra$System$Http$newManager);
+var $author$project$Builder$Http$getManager = $author$project$Extra$System$Http$defaultManager;
 var $author$project$Builder$Stuff$PackageCache = function (a) {
 	return {$: 'PackageCache', a: a};
 };
-var $author$project$Extra$System$File$getAppUserDataDirectory = function (app) {
+var $author$project$Extra$System$Dir$getAppUserDataDirectory = function (app) {
 	return $author$project$Extra$System$IO$return(
-		$author$project$Extra$System$File$Absolute(
+		$author$project$Extra$System$Dir$Absolute(
 			_List_fromArray(
 				['.' + app])));
 };
-var $author$project$Builder$Stuff$getElmHome = $author$project$Extra$System$File$getAppUserDataDirectory('elm');
+var $author$project$Builder$Stuff$getElmHome = $author$project$Extra$System$Dir$getAppUserDataDirectory('elm');
 var $author$project$Builder$Stuff$getCacheDir = function (projectName) {
 	return A2(
 		$author$project$Extra$System$IO$bind,
 		$author$project$Builder$Stuff$getElmHome,
 		function (home) {
 			var root = A2(
-				$author$project$Extra$System$File$addNames,
+				$author$project$Extra$System$Dir$addNames,
 				home,
 				_List_fromArray(
 					[$author$project$Builder$Stuff$compilerVersion, projectName]));
 			return A2(
 				$author$project$Extra$System$IO$bind,
-				A2($author$project$Extra$System$File$createDirectoryIfMissing, true, root),
+				A2($author$project$Extra$System$Dir$createDirectoryIfMissing, true, root),
 				function (_v0) {
 					return $author$project$Extra$System$IO$return(root);
 				});
@@ -51295,7 +51486,7 @@ var $author$project$Compiler$Json$Decode$string = $author$project$Compiler$Json$
 		}
 	});
 var $author$project$Compiler$Json$String$toChars = $elm$core$Basics$identity;
-var $author$project$Extra$System$File$isRelative = function (path) {
+var $author$project$Extra$System$Dir$isRelative = function (path) {
 	if (path.$ === 'Absolute') {
 		return false;
 	} else {
@@ -51303,14 +51494,14 @@ var $author$project$Extra$System$File$isRelative = function (path) {
 	}
 };
 var $author$project$Builder$Elm$Outline$toSrcDir = function (path) {
-	return $author$project$Extra$System$File$isRelative(path) ? $author$project$Builder$Elm$Outline$RelativeSrcDir(path) : $author$project$Builder$Elm$Outline$AbsoluteSrcDir(path);
+	return $author$project$Extra$System$Dir$isRelative(path) ? $author$project$Builder$Elm$Outline$RelativeSrcDir(path) : $author$project$Builder$Elm$Outline$AbsoluteSrcDir(path);
 };
 var $author$project$Builder$Elm$Outline$dirsDecoder = A2(
 	$author$project$Compiler$Json$Decode$fmap,
 	$author$project$Compiler$Data$NonEmptyList$fmap(
 		A2(
 			$elm$core$Basics$composeL,
-			A2($elm$core$Basics$composeL, $author$project$Builder$Elm$Outline$toSrcDir, $author$project$Extra$System$File$fromString),
+			A2($elm$core$Basics$composeL, $author$project$Builder$Elm$Outline$toSrcDir, $author$project$Extra$System$Dir$fromString),
 			$author$project$Compiler$Json$String$toChars)),
 	A2($author$project$Compiler$Json$Decode$nonEmptyList, $author$project$Compiler$Json$Decode$string, $author$project$Builder$Reporting$Exit$OP_NoSrcDirs));
 var $author$project$Compiler$Json$Decode$TObjectWith = function (a) {
@@ -52248,7 +52439,7 @@ var $author$project$Builder$Elm$Outline$toAbsolute = F2(
 			return dir;
 		} else {
 			var dir = srcDir.a;
-			return A2($author$project$Extra$System$File$combine, root, dir);
+			return A2($author$project$Extra$System$Dir$combine, root, dir);
 		}
 	});
 var $author$project$Builder$Elm$Outline$toGiven = function (srcDir) {
@@ -52264,7 +52455,7 @@ var $author$project$Builder$Elm$Outline$toPair = F2(
 	function (root, srcDir) {
 		return $author$project$Extra$System$IO$return(
 			_Utils_Tuple2(
-				$author$project$Extra$System$File$toString(
+				$author$project$Extra$System$Dir$toString(
 					A2($author$project$Builder$Elm$Outline$toAbsolute, root, srcDir)),
 				$author$project$Compiler$Data$OneOrMore$one(
 					$author$project$Builder$Elm$Outline$toGiven(srcDir))));
@@ -52288,9 +52479,9 @@ var $author$project$Builder$Elm$Outline$detectDuplicates = F2(
 							A2($author$project$Extra$Type$Map$fromListWith, $author$project$Compiler$Data$OneOrMore$more, pairs))));
 			});
 	});
-var $author$project$Extra$System$File$doesDirectoryExist = function (filePath) {
+var $author$project$Extra$System$Dir$doesDirectoryExist = function (filePath) {
 	return A3(
-		$author$project$Extra$System$File$walkFileSystem,
+		$author$project$Extra$System$Dir$walkFileSystem,
 		false,
 		filePath,
 		F2(
@@ -52313,14 +52504,14 @@ var $author$project$Builder$Elm$Outline$isSrcDirMissing = F2(
 		return A2(
 			$author$project$Extra$System$IO$fmap,
 			$elm$core$Basics$not,
-			$author$project$Extra$System$File$doesDirectoryExist(
+			$author$project$Extra$System$Dir$doesDirectoryExist(
 				A2($author$project$Builder$Elm$Outline$toAbsolute, root, srcDir)));
 	});
 var $author$project$Builder$Elm$Outline$read = function (root) {
 	return A2(
 		$author$project$Extra$System$IO$bind,
 		$author$project$Builder$File$readUtf8(
-			A2($author$project$Extra$System$File$addName, root, 'elm.json')),
+			A2($author$project$Extra$System$Dir$addName, root, 'elm.json')),
 		function (bytes) {
 			var _v0 = A2($author$project$Compiler$Json$Decode$fromByteString, $author$project$Builder$Elm$Outline$decoder, bytes);
 			if (_v0.$ === 'Left') {
@@ -52778,25 +52969,25 @@ var $author$project$Compiler$Elm$Package$toFilePath = function (_v0) {
 	var author = _v0.a;
 	var project = _v0.b;
 	return A2(
-		$author$project$Extra$System$File$addName,
-		$author$project$Extra$System$File$fromString(author),
+		$author$project$Extra$System$Dir$addName,
+		$author$project$Extra$System$Dir$fromString(author),
 		project);
 };
 var $author$project$Builder$Stuff$package = F3(
 	function (_v0, name, version) {
 		var dir = _v0.a;
 		return A2(
-			$author$project$Extra$System$File$addName,
+			$author$project$Extra$System$Dir$addName,
 			A2(
-				$author$project$Extra$System$File$combine,
+				$author$project$Extra$System$Dir$combine,
 				dir,
 				$author$project$Compiler$Elm$Package$toFilePath(name)),
 			$author$project$Compiler$Elm$Version$toChars(version));
 	});
 var $author$project$Extra$Type$Map$delete = $elm$core$Dict$remove;
-var $author$project$Extra$System$File$removeFile = function (filePath) {
+var $author$project$Extra$System$Dir$removeFile = function (filePath) {
 	return A3(
-		$author$project$Extra$System$File$walkFileSystem,
+		$author$project$Extra$System$Dir$walkFileSystem,
 		false,
 		filePath,
 		F2(
@@ -52818,15 +53009,15 @@ var $author$project$Extra$System$File$removeFile = function (filePath) {
 var $author$project$Builder$File$remove = function (path) {
 	return A2(
 		$author$project$Extra$System$IO$bind,
-		$author$project$Extra$System$File$doesFileExist(path),
+		$author$project$Extra$System$Dir$doesFileExist(path),
 		function (exists_) {
-			return exists_ ? $author$project$Extra$System$File$removeFile(path) : $author$project$Extra$System$IO$return(_Utils_Tuple0);
+			return exists_ ? $author$project$Extra$System$Dir$removeFile(path) : $author$project$Extra$System$IO$return(_Utils_Tuple0);
 		});
 };
 var $author$project$Builder$File$writeUtf8 = F2(
 	function (filePath, contents) {
 		return A2(
-			$author$project$Extra$System$File$writeFile,
+			$author$project$Extra$System$Dir$writeFile,
 			filePath,
 			$elm$bytes$Bytes$Encode$encode(
 				$elm$bytes$Bytes$Encode$string(contents)));
@@ -52857,7 +53048,7 @@ var $author$project$Builder$Deps$Solver$getConstraints = F2(
 								A3($author$project$Extra$Type$Map$insert, key, cs, cDict));
 						};
 						var home = A3($author$project$Builder$Stuff$package, cache, pkg, vsn);
-						var path = A2($author$project$Extra$System$File$addName, home, 'elm.json');
+						var path = A2($author$project$Extra$System$Dir$addName, home, 'elm.json');
 						return A2(
 							$author$project$Extra$System$IO$bind,
 							$author$project$Builder$File$exists(path),
@@ -52879,9 +53070,9 @@ var $author$project$Builder$Deps$Solver$getConstraints = F2(
 												} else {
 													return A2(
 														$author$project$Extra$System$IO$bind,
-														$author$project$Extra$System$File$doesDirectoryExist(
+														$author$project$Extra$System$Dir$doesDirectoryExist(
 															A2(
-																$author$project$Extra$System$File$addName,
+																$author$project$Extra$System$Dir$addName,
 																A3($author$project$Builder$Stuff$package, cache, pkg, vsn),
 																'src')),
 														function (srcExists) {
@@ -52929,7 +53120,7 @@ var $author$project$Builder$Deps$Solver$getConstraints = F2(
 														var cs = _v6.a;
 														return A2(
 															$author$project$Extra$System$IO$bind,
-															A2($author$project$Extra$System$File$createDirectoryIfMissing, true, home),
+															A2($author$project$Extra$System$Dir$createDirectoryIfMissing, true, home),
 															function (_v7) {
 																return A2(
 																	$author$project$Extra$System$IO$bind,
@@ -53398,7 +53589,7 @@ var $author$project$Builder$Elm$Details$lensMVDepMap = {
 };
 var $author$project$Builder$Stuff$objects = function (root) {
 	return A2(
-		$author$project$Extra$System$File$addName,
+		$author$project$Extra$System$Dir$addName,
 		$author$project$Builder$Stuff$stuff(root),
 		'o.dat');
 };
@@ -54235,9 +54426,9 @@ var $author$project$Builder$Elm$Details$crawlImports = F5(
 var $author$project$Builder$Elm$Details$crawlKernel = F5(
 	function (foreignDeps, mvar, pkg, src, name) {
 		var path = A2(
-			$author$project$Extra$System$File$addExtension,
+			$author$project$Extra$System$Dir$addExtension,
 			A2(
-				$author$project$Extra$System$File$addNames,
+				$author$project$Extra$System$Dir$addNames,
 				src,
 				$author$project$Compiler$Elm$ModuleName$toFileNames(name)),
 			'js');
@@ -54276,9 +54467,9 @@ var $author$project$Builder$Elm$Details$crawlKernel = F5(
 var $author$project$Builder$Elm$Details$crawlModule = F6(
 	function (foreignDeps, mvar, pkg, src, name, _v0) {
 		var path = A2(
-			$author$project$Extra$System$File$addExtension,
+			$author$project$Extra$System$Dir$addExtension,
 			A2(
-				$author$project$Extra$System$File$addNames,
+				$author$project$Extra$System$Dir$addNames,
 				src,
 				$author$project$Compiler$Elm$ModuleName$toFileNames(name)),
 			'elm');
@@ -54526,7 +54717,7 @@ var $author$project$Builder$Elm$Details$getDocsStatus = F3(
 			$author$project$Extra$System$IO$bind,
 			$author$project$Builder$File$exists(
 				A2(
-					$author$project$Extra$System$File$addName,
+					$author$project$Extra$System$Dir$addName,
 					A3($author$project$Builder$Stuff$package, cache, pkg, vsn),
 					'docs.json')),
 			function (exists) {
@@ -54596,7 +54787,7 @@ var $author$project$Builder$Elm$Details$build = F6(
 										} else {
 											var directArtifacts = _v3.a;
 											var src = A2(
-												$author$project$Extra$System$File$addName,
+												$author$project$Extra$System$Dir$addName,
 												A3($author$project$Builder$Stuff$package, cache, pkg, vsn),
 												'src');
 											var foreignDeps = $author$project$Builder$Elm$Details$gatherForeignInterfaces(directArtifacts);
@@ -54701,7 +54892,7 @@ var $author$project$Builder$Elm$Details$build = F6(
 																																} else {
 																																	var results = _v9.a;
 																																	var path = A2(
-																																		$author$project$Extra$System$File$addName,
+																																		$author$project$Extra$System$Dir$addName,
 																																		A3($author$project$Builder$Stuff$package, cache, pkg, vsn),
 																																		'artifacts.dat');
 																																	var objects = $author$project$Builder$Elm$Details$gatherObjects(results);
@@ -57074,12 +57265,12 @@ var $author$project$Builder$File$writeEntry = F3(
 		if (A2($elm$core$String$startsWith, 'src/', path) || ((path === 'LICENSE') || ((path === 'README.md') || (path === 'elm.json')))) {
 			if ((!$elm$core$String$isEmpty(path)) && A2($elm$core$String$endsWith, '/', path)) {
 				return A2(
-					$author$project$Extra$System$File$createDirectoryIfMissing,
+					$author$project$Extra$System$Dir$createDirectoryIfMissing,
 					true,
 					A2(
-						$author$project$Extra$System$File$combine,
+						$author$project$Extra$System$Dir$combine,
 						destination,
-						$author$project$Extra$System$File$fromString(path)));
+						$author$project$Extra$System$Dir$fromString(path)));
 			} else {
 				var _v0 = $agu_z$elm_zip$Zip$Entry$toBytes(entry);
 				if (_v0.$ === 'Err') {
@@ -57087,11 +57278,11 @@ var $author$project$Builder$File$writeEntry = F3(
 				} else {
 					var bytes = _v0.a;
 					return A2(
-						$author$project$Extra$System$File$writeFile,
+						$author$project$Extra$System$Dir$writeFile,
 						A2(
-							$author$project$Extra$System$File$combine,
+							$author$project$Extra$System$Dir$combine,
 							destination,
-							$author$project$Extra$System$File$fromString(path)),
+							$author$project$Extra$System$Dir$fromString(path)),
 						bytes);
 				}
 			}
@@ -57181,9 +57372,9 @@ var $author$project$Builder$Elm$Details$verifyDep = F6(
 			directDeps);
 		return A2(
 			$author$project$Extra$System$IO$bind,
-			$author$project$Extra$System$File$doesDirectoryExist(
+			$author$project$Extra$System$Dir$doesDirectoryExist(
 				A2(
-					$author$project$Extra$System$File$addName,
+					$author$project$Extra$System$Dir$addName,
 					A3($author$project$Builder$Stuff$package, cache, pkg, vsn),
 					'src')),
 			function (exists) {
@@ -57193,7 +57384,7 @@ var $author$project$Builder$Elm$Details$verifyDep = F6(
 						$author$project$Builder$File$readBinary,
 						$author$project$Builder$Elm$Details$bArtifactCache,
 						A2(
-							$author$project$Extra$System$File$addName,
+							$author$project$Extra$System$Dir$addName,
 							A3($author$project$Builder$Stuff$package, cache, pkg, vsn),
 							'artifacts.dat')),
 					function (maybeCache) {
@@ -57447,7 +57638,7 @@ var $author$project$Builder$Elm$Details$load = function (root) {
 	return A2(
 		$author$project$Extra$System$IO$bind,
 		$author$project$Builder$File$getTime(
-			A2($author$project$Extra$System$File$addName, root, 'elm.json')),
+			A2($author$project$Extra$System$Dir$addName, root, 'elm.json')),
 		function (newTime) {
 			return A2(
 				$author$project$Extra$System$IO$bind,
@@ -62336,19 +62527,6 @@ var $author$project$Terminal$Repl$initialState = function (_v0) {
 var $author$project$Terminal$Command$Permanent = function (a) {
 	return {$: 'Permanent', a: a};
 };
-var $author$project$Extra$Type$Lens$modify = F3(
-	function (lens, f, a) {
-		return A2(
-			lens.setter,
-			f(
-				lens.getter(a)),
-			a);
-	});
-var $author$project$Extra$System$IO$modifyLens = F2(
-	function (lens, f) {
-		return $author$project$Extra$System$IO$modify(
-			A2($author$project$Extra$Type$Lens$modify, lens, f));
-	});
 var $author$project$Terminal$Command$putOutput = function (output) {
 	return A2(
 		$author$project$Extra$System$IO$modifyLens,
@@ -62659,7 +62837,7 @@ var $author$project$Compiler$Reporting$Error$Json$FailureToReport = function (a)
 };
 var $author$project$Compiler$Reporting$Doc$fromPath = function (path) {
 	return $author$project$Extra$Data$Pretty$text(
-		$author$project$Extra$System$File$toString(path));
+		$author$project$Extra$System$Dir$toString(path));
 };
 var $author$project$Compiler$Elm$Version$bumpMajor = function (_v0) {
 	var major = _v0.a;
@@ -62848,7 +63026,7 @@ var $author$project$Builder$Reporting$Exit$toOutlineProblemReport = F5(
 										$author$project$Compiler$Reporting$Doc$d('APIs'),
 										$author$project$Compiler$Reporting$Doc$d('follow'),
 										$author$project$Compiler$Reporting$Doc$d('semantic'),
-										$author$project$Compiler$Reporting$Doc$d('versioning,d'),
+										$author$project$Compiler$Reporting$Doc$d('versioning,'),
 										$author$project$Compiler$Reporting$Doc$d('so'),
 										$author$project$Compiler$Reporting$Doc$d('it'),
 										$author$project$Compiler$Reporting$Doc$d('is'),
@@ -62922,7 +63100,7 @@ var $author$project$Builder$Reporting$Exit$toOutlineProblemReport = F5(
 										$author$project$Compiler$Reporting$Doc$d('APIs'),
 										$author$project$Compiler$Reporting$Doc$d('follow'),
 										$author$project$Compiler$Reporting$Doc$d('semantic'),
-										$author$project$Compiler$Reporting$Doc$d('versioning,d'),
+										$author$project$Compiler$Reporting$Doc$d('versioning,'),
 										$author$project$Compiler$Reporting$Doc$d('so'),
 										$author$project$Compiler$Reporting$Doc$d('it'),
 										$author$project$Compiler$Reporting$Doc$d('is'),
@@ -63033,7 +63211,7 @@ var $author$project$Builder$Reporting$Exit$toOutlineProblemReport = F5(
 											$author$project$Compiler$Reporting$Doc$d('name'),
 											$author$project$Compiler$Reporting$Doc$d('of'),
 											$author$project$Compiler$Reporting$Doc$d('the'),
-											$author$project$Compiler$Reporting$Doc$d('author,d'),
+											$author$project$Compiler$Reporting$Doc$d('author,'),
 											$author$project$Compiler$Reporting$Doc$d('so'),
 											$author$project$Compiler$Reporting$Doc$d('I'),
 											$author$project$Compiler$Reporting$Doc$d('am'),
@@ -63320,7 +63498,7 @@ var $author$project$Compiler$Reporting$Error$Json$parseErrorToReport = F4(
 											$author$project$Compiler$Reporting$Doc$d('I'),
 											$author$project$Compiler$Reporting$Doc$d('got'),
 											$author$project$Compiler$Reporting$Doc$d('stuck'),
-											$author$project$Compiler$Reporting$Doc$d('here,d'),
+											$author$project$Compiler$Reporting$Doc$d('here,'),
 											$author$project$Compiler$Reporting$Doc$d('so'),
 											$author$project$Compiler$Reporting$Doc$d('I'),
 											$author$project$Compiler$Reporting$Doc$d('was'),
@@ -63867,7 +64045,7 @@ var $author$project$Builder$Reporting$Exit$toOutlineReport = function (problem) 
 			var decodeError = problem.a;
 			return A4(
 				$author$project$Compiler$Reporting$Error$Json$toReport,
-				$author$project$Extra$System$File$fromString('elm.json'),
+				$author$project$Extra$System$Dir$fromString('elm.json'),
 				$author$project$Compiler$Reporting$Error$Json$FailureToReport($author$project$Builder$Reporting$Exit$toOutlineProblemReport),
 				decodeError,
 				$author$project$Compiler$Reporting$Error$Json$ExplicitReason('I ran into a problem with your elm.json file.'));
@@ -63879,7 +64057,7 @@ var $author$project$Builder$Reporting$Exit$toOutlineReport = function (problem) 
 					$author$project$Builder$Reporting$Exit$Help$report,
 					'MISSING SOURCE DIRECTORY',
 					$elm$core$Maybe$Just(
-						$author$project$Extra$System$File$fromString('elm.json')),
+						$author$project$Extra$System$Dir$fromString('elm.json')),
 					'I need a valid elm.json file, but the \"source-directories\" field lists the following directory:',
 					_List_fromArray(
 						[
@@ -63895,7 +64073,7 @@ var $author$project$Builder$Reporting$Exit$toOutlineReport = function (problem) 
 					$author$project$Builder$Reporting$Exit$Help$report,
 					'MISSING SOURCE DIRECTORIES',
 					$elm$core$Maybe$Just(
-						$author$project$Extra$System$File$fromString('elm.json')),
+						$author$project$Extra$System$Dir$fromString('elm.json')),
 					'I need a valid elm.json file, but the \"source-directories\" field lists the following directories:',
 					_List_fromArray(
 						[
@@ -63918,7 +64096,7 @@ var $author$project$Builder$Reporting$Exit$toOutlineReport = function (problem) 
 				$author$project$Builder$Reporting$Exit$Help$report,
 				'REDUNDANT SOURCE DIRECTORIES',
 				$elm$core$Maybe$Just(
-					$author$project$Extra$System$File$fromString('elm.json')),
+					$author$project$Extra$System$Dir$fromString('elm.json')),
 				'I need a valid elm.json file, but the \"source-directories\" field lists the same directory twice:',
 				_List_fromArray(
 					[
@@ -63936,7 +64114,7 @@ var $author$project$Builder$Reporting$Exit$toOutlineReport = function (problem) 
 				$author$project$Builder$Reporting$Exit$Help$report,
 				'REDUNDANT SOURCE DIRECTORIES',
 				$elm$core$Maybe$Just(
-					$author$project$Extra$System$File$fromString('elm.json')),
+					$author$project$Extra$System$Dir$fromString('elm.json')),
 				'I need a valid elm.json file, but the \"source-directories\" field has some redundant directories:',
 				_List_fromArray(
 					[
@@ -63962,7 +64140,7 @@ var $author$project$Builder$Reporting$Exit$toOutlineReport = function (problem) 
 				$author$project$Builder$Reporting$Exit$Help$report,
 				'MISSING DEPENDENCY',
 				$elm$core$Maybe$Just(
-					$author$project$Extra$System$File$fromString('elm.json')),
+					$author$project$Extra$System$Dir$fromString('elm.json')),
 				'I need to see an \"elm/core\" dependency your elm.json file. The default imports' + ' of `List` and `Maybe` do not work without it.',
 				_List_fromArray(
 					[
@@ -63973,7 +64151,7 @@ var $author$project$Builder$Reporting$Exit$toOutlineReport = function (problem) 
 				$author$project$Builder$Reporting$Exit$Help$report,
 				'MISSING DEPENDENCY',
 				$elm$core$Maybe$Just(
-					$author$project$Extra$System$File$fromString('elm.json')),
+					$author$project$Extra$System$Dir$fromString('elm.json')),
 				'I need to see an \"elm/core\" dependency your elm.json file. The default imports' + ' of `List` and `Maybe` do not work without it.',
 				_List_fromArray(
 					[
@@ -63984,7 +64162,7 @@ var $author$project$Builder$Reporting$Exit$toOutlineReport = function (problem) 
 				$author$project$Builder$Reporting$Exit$Help$report,
 				'MISSING DEPENDENCY',
 				$elm$core$Maybe$Just(
-					$author$project$Extra$System$File$fromString('elm.json')),
+					$author$project$Extra$System$Dir$fromString('elm.json')),
 				'I need to see an \"elm/json\" dependency your elm.json file. It helps me handle' + ' flags and ports.',
 				_List_fromArray(
 					[
@@ -64195,7 +64373,7 @@ var $author$project$Builder$Reporting$Exit$toDetailsReport = function (details) 
 				$author$project$Builder$Reporting$Exit$Help$report,
 				'INCOMPATIBLE DEPENDENCIES',
 				$elm$core$Maybe$Just(
-					$author$project$Extra$System$File$fromString('elm.json')),
+					$author$project$Extra$System$Dir$fromString('elm.json')),
 				'The dependencies in your elm.json are not compatible.',
 				_List_fromArray(
 					[
@@ -64236,7 +64414,7 @@ var $author$project$Builder$Reporting$Exit$toDetailsReport = function (details) 
 				$author$project$Builder$Reporting$Exit$Help$report,
 				'TROUBLE VERIFYING DEPENDENCIES',
 				$elm$core$Maybe$Just(
-					$author$project$Extra$System$File$fromString('elm.json')),
+					$author$project$Extra$System$Dir$fromString('elm.json')),
 				'I could not connect to https://package.elm-lang.org to get the latest list of' + (' packages, and I was unable to verify your dependencies with the information I' + ' have cached locally.'),
 				_List_fromArray(
 					[
@@ -64250,7 +64428,7 @@ var $author$project$Builder$Reporting$Exit$toDetailsReport = function (details) 
 								$author$project$Compiler$Reporting$Doc$d('your'),
 								$author$project$Compiler$Reporting$Doc$d('dependencies'),
 								$author$project$Compiler$Reporting$Doc$d('by'),
-								$author$project$Compiler$Reporting$Doc$d('hand,d'),
+								$author$project$Compiler$Reporting$Doc$d('hand,'),
 								$author$project$Compiler$Reporting$Doc$d('try'),
 								$author$project$Compiler$Reporting$Doc$d('to'),
 								$author$project$Compiler$Reporting$Doc$d('change'),
@@ -64282,7 +64460,7 @@ var $author$project$Builder$Reporting$Exit$toDetailsReport = function (details) 
 				$author$project$Builder$Reporting$Exit$Help$report,
 				'ELM VERSION MISMATCH',
 				$elm$core$Maybe$Just(
-					$author$project$Extra$System$File$fromString('elm.json')),
+					$author$project$Extra$System$Dir$fromString('elm.json')),
 				'Your elm.json says this package needs a version of Elm in this range:',
 				_List_fromArray(
 					[
@@ -64312,7 +64490,7 @@ var $author$project$Builder$Reporting$Exit$toDetailsReport = function (details) 
 				$author$project$Builder$Reporting$Exit$Help$report,
 				'ELM VERSION MISMATCH',
 				$elm$core$Maybe$Just(
-					$author$project$Extra$System$File$fromString('elm.json')),
+					$author$project$Extra$System$Dir$fromString('elm.json')),
 				'Your elm.json says this application needs a different version of Elm.',
 				_List_fromArray(
 					[
@@ -64343,7 +64521,7 @@ var $author$project$Builder$Reporting$Exit$toDetailsReport = function (details) 
 				$author$project$Builder$Reporting$Exit$Help$report,
 				'ERROR IN DEPENDENCIES',
 				$elm$core$Maybe$Just(
-					$author$project$Extra$System$File$fromString('elm.json')),
+					$author$project$Extra$System$Dir$fromString('elm.json')),
 				'It looks like the dependencies elm.json in were edited by hand (or by a 3rd' + ' party tool) leaving them in an invalid state.',
 				_List_fromArray(
 					[
@@ -64397,7 +64575,7 @@ var $author$project$Builder$Reporting$Exit$toDetailsReport = function (details) 
 					_List_fromArray(
 						[
 							$author$project$Compiler$Reporting$Doc$reflow(
-							'I would try deleting the ' + ($author$project$Extra$System$File$toString(cacheDir) + (' and elm-stuff/ directories, then' + (' trying to build again. That will work if some cached files got corrupted' + ' somehow.')))),
+							'I would try deleting the ' + ($author$project$Extra$System$Dir$toString(cacheDir) + (' and elm-stuff/ directories, then' + (' trying to build again. That will work if some cached files got corrupted' + ' somehow.')))),
 							$author$project$Compiler$Reporting$Doc$reflow('If that does not work, go to https://elm-lang.org/community and ask for' + ' help. This is a weird case!')
 						]));
 			} else {
@@ -64519,7 +64697,7 @@ var $author$project$Builder$Reporting$Exit$toModuleNameConventionTable = F2(
 		var toPair = function (name) {
 			return _Utils_Tuple2(
 				name,
-				$author$project$Extra$System$File$toString(srcDir) + (A2(
+				$author$project$Extra$System$Dir$toString(srcDir) + (A2(
 					$elm$core$String$map,
 					function (c) {
 						return _Utils_eq(
@@ -64707,7 +64885,7 @@ var $author$project$Builder$Reporting$Exit$toProjectProblemReport = function (pr
 						$author$project$Compiler$Reporting$Doc$red(
 							$author$project$Compiler$Reporting$Doc$fromPath(givenPath))),
 						$author$project$Compiler$Reporting$Doc$reflow(
-						'I found it in your ' + ($author$project$Extra$System$File$toString(srcDir) + ('/ directory' + (' which is good, but I expect all of the files in there to use the following' + ' module naming convention:')))),
+						'I found it in your ' + ($author$project$Extra$System$Dir$toString(srcDir) + ('/ directory' + (' which is good, but I expect all of the files in there to use the following' + ' module naming convention:')))),
 						A2(
 						$author$project$Builder$Reporting$Exit$toModuleNameConventionTable,
 						srcDir,
@@ -64743,7 +64921,7 @@ var $author$project$Builder$Reporting$Exit$toProjectProblemReport = function (pr
 						$author$project$Builder$Reporting$Exit$Help$report,
 						'MISSING MODULE',
 						$elm$core$Maybe$Just(
-							$author$project$Extra$System$File$fromString('elm.json')),
+							$author$project$Extra$System$Dir$fromString('elm.json')),
 						'The  \"exposed-modules\" of your elm.json lists the following module:',
 						_List_fromArray(
 							[
@@ -64760,7 +64938,7 @@ var $author$project$Builder$Reporting$Exit$toProjectProblemReport = function (pr
 						$author$project$Builder$Reporting$Exit$Help$report,
 						'AMBIGUOUS MODULE NAME',
 						$elm$core$Maybe$Just(
-							$author$project$Extra$System$File$fromString('elm.json')),
+							$author$project$Extra$System$Dir$fromString('elm.json')),
 						'The  \"exposed-modules\" of your elm.json lists the following module:',
 						_List_fromArray(
 							[
@@ -64780,7 +64958,7 @@ var $author$project$Builder$Reporting$Exit$toProjectProblemReport = function (pr
 						$author$project$Builder$Reporting$Exit$Help$report,
 						'AMBIGUOUS MODULE NAME',
 						$elm$core$Maybe$Just(
-							$author$project$Extra$System$File$fromString('elm.json')),
+							$author$project$Extra$System$Dir$fromString('elm.json')),
 						'The  \"exposed-modules\" of your elm.json lists the following module:',
 						_List_fromArray(
 							[
@@ -64809,7 +64987,7 @@ var $author$project$Builder$Reporting$Exit$toProjectProblemReport = function (pr
 						$author$project$Builder$Reporting$Exit$Help$report,
 						'MISSING MODULE',
 						$elm$core$Maybe$Just(
-							$author$project$Extra$System$File$fromString('elm.json')),
+							$author$project$Extra$System$Dir$fromString('elm.json')),
 						'The  \"exposed-modules\" of your elm.json lists the following module:',
 						_List_fromArray(
 							[
@@ -64834,11 +65012,11 @@ var $author$project$Builder$Reporting$Exit$replToReport = function (problem) {
 			var err = problem.b;
 			return A3(
 				$author$project$Builder$Reporting$Exit$Help$compilerReport,
-				$author$project$Extra$System$File$fromString('/'),
+				$author$project$Extra$System$Dir$fromString('/'),
 				A5(
 					$author$project$Compiler$Reporting$Error$Module,
 					$author$project$Compiler$Data$Name$replModule,
-					$author$project$Extra$System$File$fromString('REPL'),
+					$author$project$Extra$System$Dir$fromString('REPL'),
 					$author$project$Builder$File$zeroTime,
 					source,
 					err),
@@ -64876,13 +65054,13 @@ var $author$project$Compiler$Reporting$Error$getModificationTime = function (_v0
 var $author$project$Compiler$Reporting$Error$toMessageBar = F2(
 	function (title, filePath) {
 		var usedSpace = ((4 + $elm$core$String$length(title)) + 1) + $elm$core$String$length(
-			$author$project$Extra$System$File$toString(filePath));
+			$author$project$Extra$System$Dir$toString(filePath));
 		return $author$project$Compiler$Reporting$Doc$dullcyan(
 			$author$project$Compiler$Reporting$Doc$fromChars(
 				'-- ' + (title + (' ' + (A2(
 					$elm$core$String$repeat,
 					A2($elm$core$Basics$max, 1, 80 - usedSpace),
-					'-') + (' ' + $author$project$Extra$System$File$toString(filePath)))))));
+					'-') + (' ' + $author$project$Extra$System$Dir$toString(filePath)))))));
 	});
 var $author$project$Compiler$Reporting$Error$reportToDoc = F2(
 	function (relativePath, _v0) {
@@ -66808,7 +66986,7 @@ var $author$project$Compiler$Reporting$Error$Import$toReport = F2(
 												$author$project$Compiler$Reporting$Doc$dullyellow(
 												$author$project$Compiler$Reporting$Doc$fromChars(
 													$author$project$Compiler$Elm$Package$toChars(pkg))),
-												$author$project$Compiler$Reporting$Doc$d('package,d'),
+												$author$project$Compiler$Reporting$Doc$d('package,'),
 												$author$project$Compiler$Reporting$Doc$d('and'),
 												$author$project$Compiler$Reporting$Doc$d('another'),
 												$author$project$Compiler$Reporting$Doc$d('defined'),
@@ -67705,7 +67883,7 @@ var $author$project$Compiler$Reporting$Error$Type$problemToHint = function (prob
 							$author$project$Compiler$Reporting$Doc$d('possible'),
 							$author$project$Compiler$Reporting$Doc$d('errors.'),
 							$author$project$Compiler$Reporting$Doc$d('Longer'),
-							$author$project$Compiler$Reporting$Doc$d('term,d'),
+							$author$project$Compiler$Reporting$Doc$d('term,'),
 							$author$project$Compiler$Reporting$Doc$d('it'),
 							$author$project$Compiler$Reporting$Doc$d('is'),
 							$author$project$Compiler$Reporting$Doc$d('usually'),
@@ -69054,7 +69232,7 @@ var $author$project$Compiler$Reporting$Error$Type$badAppendLeft = F4(
 							$author$project$Compiler$Reporting$Doc$d('List'),
 							$author$project$Compiler$Reporting$Doc$d('and'),
 							$author$project$Compiler$Reporting$Doc$d('String'),
-							$author$project$Compiler$Reporting$Doc$d('values,d'),
+							$author$project$Compiler$Reporting$Doc$d('values,'),
 							$author$project$Compiler$Reporting$Doc$d('but'),
 							$author$project$Compiler$Reporting$Doc$d('not'),
 							$author$project$Compiler$Reporting$Doc$dullyellow(thing),
@@ -69226,7 +69404,7 @@ var $author$project$Compiler$Reporting$Error$Type$badCompLeft = F6(
 								$author$project$Compiler$Reporting$Doc$d('comparable'),
 								$author$project$Compiler$Reporting$Doc$d('values'),
 								$author$project$Compiler$Reporting$Doc$d('as'),
-								$author$project$Compiler$Reporting$Doc$d('well,d'),
+								$author$project$Compiler$Reporting$Doc$d('well,'),
 								$author$project$Compiler$Reporting$Doc$d('but'),
 								$author$project$Compiler$Reporting$Doc$d('it'),
 								$author$project$Compiler$Reporting$Doc$d('is'),
@@ -69760,7 +69938,7 @@ var $author$project$Compiler$Reporting$Error$Type$badAppendRight = F4(
 												$author$project$Compiler$Reporting$Doc$d('appending'),
 												$author$project$Compiler$Reporting$Doc$dullyellowS('String'),
 												$author$project$Compiler$Reporting$Doc$d('values'),
-												$author$project$Compiler$Reporting$Doc$d('here,d'),
+												$author$project$Compiler$Reporting$Doc$d('here,'),
 												$author$project$Compiler$Reporting$Doc$d('not'),
 												$author$project$Compiler$Reporting$Doc$dullyellow(thing),
 												$author$project$Compiler$Reporting$Doc$d('values'),
@@ -71137,7 +71315,7 @@ var $author$project$Compiler$Reporting$Error$moduleToDoc = F2(
 			$author$project$Compiler$Reporting$Error$toReports,
 			$author$project$Compiler$Reporting$Render$Code$toSource(source),
 			err);
-		var relativePath = A2($author$project$Extra$System$File$makeRelative, root, absolutePath);
+		var relativePath = A2($author$project$Extra$System$Dir$makeRelative, root, absolutePath);
 		return $author$project$Compiler$Reporting$Doc$vcat(
 			A2(
 				$author$project$Extra$Type$List$map,
@@ -71228,7 +71406,7 @@ var $author$project$Builder$Reporting$Exit$Help$reportToDoc = function (report_)
 				var path = maybePath.a;
 				return makeDashes(
 					(5 + $elm$core$String$length(title)) + $elm$core$String$length(
-						$author$project$Extra$System$File$toString(path))) + (' ' + $author$project$Extra$System$File$toString(path));
+						$author$project$Extra$System$Dir$toString(path))) + (' ' + $author$project$Extra$System$Dir$toString(path));
 			}
 		}();
 		var errorBar = $author$project$Compiler$Reporting$Doc$dullcyan(
@@ -71317,14 +71495,14 @@ var $author$project$Builder$Elm$Outline$defaultSummary = $author$project$Compile
 var $author$project$Builder$Stuff$findRootHelp = function (dirs) {
 	return A2(
 		$author$project$Extra$System$IO$bind,
-		$author$project$Extra$System$File$doesFileExist(
-			A2($author$project$Extra$System$File$addName, dirs, 'elm.json')),
+		$author$project$Extra$System$Dir$doesFileExist(
+			A2($author$project$Extra$System$Dir$addName, dirs, 'elm.json')),
 		function (exists) {
 			if (exists) {
 				return $author$project$Extra$System$IO$return(
 					$elm$core$Maybe$Just(dirs));
 			} else {
-				var _v0 = $author$project$Extra$System$File$splitLastName(dirs);
+				var _v0 = $author$project$Extra$System$Dir$splitLastName(dirs);
 				if (_v0.b === '') {
 					return $author$project$Extra$System$IO$return($elm$core$Maybe$Nothing);
 				} else {
@@ -71336,7 +71514,7 @@ var $author$project$Builder$Stuff$findRootHelp = function (dirs) {
 };
 var $author$project$Builder$Stuff$findRoot = A2(
 	$author$project$Extra$System$IO$bind,
-	$author$project$Extra$System$File$getCurrentDirectory,
+	$author$project$Extra$System$Dir$getCurrentDirectory,
 	function (dir) {
 		return $author$project$Builder$Stuff$findRootHelp(dir);
 	});
@@ -71410,11 +71588,11 @@ var $author$project$Builder$Elm$Outline$encodeSrcDir = function (srcDir) {
 	if (srcDir.$ === 'AbsoluteSrcDir') {
 		var dir = srcDir.a;
 		return $author$project$Compiler$Json$Encode$chars(
-			$author$project$Extra$System$File$toString(dir));
+			$author$project$Extra$System$Dir$toString(dir));
 	} else {
 		var dir = srcDir.a;
 		return $author$project$Compiler$Json$Encode$chars(
-			$author$project$Extra$System$File$toString(dir));
+			$author$project$Extra$System$Dir$toString(dir));
 	}
 };
 var $author$project$Builder$Elm$Outline$encode = function (outline) {
@@ -71613,7 +71791,7 @@ var $author$project$Builder$Elm$Outline$write = F2(
 	function (root, outline) {
 		return A2(
 			$author$project$Compiler$Json$Encode$write,
-			A2($author$project$Extra$System$File$addName, root, 'elm.json'),
+			A2($author$project$Extra$System$Dir$addName, root, 'elm.json'),
 			$author$project$Builder$Elm$Outline$encode(outline));
 	});
 var $author$project$Terminal$Repl$getRoot = A2(
@@ -71628,13 +71806,13 @@ var $author$project$Terminal$Repl$getRoot = A2(
 				$author$project$Extra$System$IO$bind,
 				$author$project$Builder$Stuff$getReplCache,
 				function (cache) {
-					var root = A2($author$project$Extra$System$File$addName, cache, 'tmp');
+					var root = A2($author$project$Extra$System$Dir$addName, cache, 'tmp');
 					return A2(
 						$author$project$Extra$System$IO$bind,
 						A2(
-							$author$project$Extra$System$File$createDirectoryIfMissing,
+							$author$project$Extra$System$Dir$createDirectoryIfMissing,
 							true,
-							A2($author$project$Extra$System$File$addName, root, 'src')),
+							A2($author$project$Extra$System$Dir$addName, root, 'src')),
 						function (_v1) {
 							return A2(
 								$author$project$Extra$System$IO$bind,
@@ -72171,21 +72349,21 @@ var $author$project$Extra$System$IO$liftTask = function (task) {
 		A2($elm$core$Task$perform, $author$project$Extra$System$IO$return, task));
 };
 var $author$project$Extra$System$IO$now = $author$project$Extra$System$IO$liftTask($elm$time$Time$now);
-var $author$project$Extra$System$File$Util$getTreeError = A2(
+var $author$project$Extra$System$Dir$Util$getTreeError = A2(
 	$author$project$Extra$System$IO$rmap,
 	$author$project$Extra$System$IO$now,
 	function (time) {
 		return _Utils_Tuple2(time, $author$project$Extra$Type$Map$empty);
 	});
-var $author$project$Extra$System$File$Remote$afterDirStep = F3(
+var $author$project$Extra$System$Dir$Local$afterDirStep = F3(
 	function (_v0, beforeFilePath, _v1) {
 		return beforeFilePath;
 	});
-var $author$project$Extra$System$File$Remote$beforeDirStep = F2(
+var $author$project$Extra$System$Dir$Local$beforeDirStep = F2(
 	function (name, dirPath) {
 		return dirPath + ('/' + name);
 	});
-var $author$project$Extra$System$File$Util$performRequest = F3(
+var $author$project$Extra$System$Dir$Util$performRequest = F3(
 	function (prefix, remotePath, callback) {
 		return A2(
 			$author$project$Extra$System$IO$bind,
@@ -72197,10 +72375,10 @@ var $author$project$Extra$System$File$Util$performRequest = F3(
 					callback(manager));
 			});
 	});
-var $author$project$Extra$System$File$Util$requestBytes = F3(
+var $author$project$Extra$System$Dir$Util$requestBytes = F3(
 	function (prefix, remotePath, callback) {
 		return A3(
-			$author$project$Extra$System$File$Util$performRequest,
+			$author$project$Extra$System$Dir$Util$performRequest,
 			prefix,
 			remotePath,
 			F2(
@@ -72208,10 +72386,10 @@ var $author$project$Extra$System$File$Util$requestBytes = F3(
 					return A3($author$project$Extra$System$Http$withBytesResponse, request, manager, callback);
 				}));
 	});
-var $author$project$Extra$System$File$Remote$getFile = F2(
+var $author$project$Extra$System$Dir$Local$getFile = F2(
 	function (prefix, filePath) {
 		return A3(
-			$author$project$Extra$System$File$Util$requestBytes,
+			$author$project$Extra$System$Dir$Util$requestBytes,
 			prefix,
 			filePath,
 			function (response) {
@@ -72224,14 +72402,14 @@ var $author$project$Extra$System$File$Remote$getFile = F2(
 				}
 			});
 	});
-var $author$project$Extra$System$File$Remote$fileStep = F4(
+var $author$project$Extra$System$Dir$Local$fileStep = F4(
 	function (prefix, name, _v0, dirPath) {
 		return _Utils_Tuple2(
 			dirPath,
-			A2($author$project$Extra$System$File$Remote$getFile, prefix, dirPath + ('/' + name)));
+			A2($author$project$Extra$System$Dir$Local$getFile, prefix, dirPath + ('/' + name)));
 	});
 var $elm$json$Json$Decode$decodeString = _Json_runOnString;
-var $author$project$Extra$System$File$Util$DirectoryEntry = function (a) {
+var $author$project$Extra$System$Dir$Util$DirectoryEntry = function (a) {
 	return {$: 'DirectoryEntry', a: a};
 };
 var $elm$json$Json$Decode$keyValuePairs = _Json_decodeKeyValuePairs;
@@ -72251,41 +72429,41 @@ var $elm$json$Json$Decode$lazy = function (thunk) {
 var $elm$json$Json$Decode$map2 = _Json_map2;
 var $elm$json$Json$Decode$oneOf = _Json_oneOf;
 var $elm$json$Json$Decode$int = _Json_decodeInt;
-var $author$project$Extra$System$File$Util$timeDecoder = A2($elm$json$Json$Decode$map, $elm$time$Time$millisToPosix, $elm$json$Json$Decode$int);
-var $author$project$Extra$System$File$Util$UnreadFileEntry = F2(
+var $author$project$Extra$System$Dir$Util$timeDecoder = A2($elm$json$Json$Decode$map, $elm$time$Time$millisToPosix, $elm$json$Json$Decode$int);
+var $author$project$Extra$System$Dir$Util$UnreadFileEntry = F2(
 	function (a, b) {
 		return {$: 'UnreadFileEntry', a: a, b: b};
 	});
-var $author$project$Extra$System$File$Util$timeFileEntryDecoder = A3(
+var $author$project$Extra$System$Dir$Util$timeFileEntryDecoder = A3(
 	$elm$json$Json$Decode$map2,
 	F2(
 		function (time, size) {
 			return _Utils_Tuple2(
 				time,
-				A2($author$project$Extra$System$File$Util$UnreadFileEntry, size, _Utils_Tuple0));
+				A2($author$project$Extra$System$Dir$Util$UnreadFileEntry, size, _Utils_Tuple0));
 		}),
-	A2($elm$json$Json$Decode$index, 1, $author$project$Extra$System$File$Util$timeDecoder),
+	A2($elm$json$Json$Decode$index, 1, $author$project$Extra$System$Dir$Util$timeDecoder),
 	A2($elm$json$Json$Decode$index, 0, $elm$json$Json$Decode$int));
-function $author$project$Extra$System$File$Util$cyclic$directoryDecoder() {
+function $author$project$Extra$System$Dir$Util$cyclic$directoryDecoder() {
 	return A3(
 		$elm$json$Json$Decode$map2,
 		$elm$core$Tuple$pair,
-		A2($elm$json$Json$Decode$index, 1, $author$project$Extra$System$File$Util$timeDecoder),
+		A2($elm$json$Json$Decode$index, 1, $author$project$Extra$System$Dir$Util$timeDecoder),
 		A2(
 			$elm$json$Json$Decode$index,
 			0,
 			$elm$json$Json$Decode$dict(
-				$author$project$Extra$System$File$Util$cyclic$timeEntryDecoder())));
+				$author$project$Extra$System$Dir$Util$cyclic$timeEntryDecoder())));
 }
-function $author$project$Extra$System$File$Util$cyclic$timeEntryDecoder() {
+function $author$project$Extra$System$Dir$Util$cyclic$timeEntryDecoder() {
 	return $elm$json$Json$Decode$oneOf(
 		_List_fromArray(
 			[
-				$author$project$Extra$System$File$Util$timeFileEntryDecoder,
-				$author$project$Extra$System$File$Util$cyclic$timeDirEntryDecoder()
+				$author$project$Extra$System$Dir$Util$timeFileEntryDecoder,
+				$author$project$Extra$System$Dir$Util$cyclic$timeDirEntryDecoder()
 			]));
 }
-function $author$project$Extra$System$File$Util$cyclic$timeDirEntryDecoder() {
+function $author$project$Extra$System$Dir$Util$cyclic$timeDirEntryDecoder() {
 	return A2(
 		$elm$json$Json$Decode$map,
 		function (_v0) {
@@ -72293,44 +72471,44 @@ function $author$project$Extra$System$File$Util$cyclic$timeDirEntryDecoder() {
 			var directory = _v0.b;
 			return _Utils_Tuple2(
 				time,
-				$author$project$Extra$System$File$Util$DirectoryEntry(directory));
+				$author$project$Extra$System$Dir$Util$DirectoryEntry(directory));
 		},
 		$elm$json$Json$Decode$lazy(
 			function (_v1) {
-				return $author$project$Extra$System$File$Util$cyclic$directoryDecoder();
+				return $author$project$Extra$System$Dir$Util$cyclic$directoryDecoder();
 			}));
 }
 try {
-	var $author$project$Extra$System$File$Util$directoryDecoder = $author$project$Extra$System$File$Util$cyclic$directoryDecoder();
-	$author$project$Extra$System$File$Util$cyclic$directoryDecoder = function () {
-		return $author$project$Extra$System$File$Util$directoryDecoder;
+	var $author$project$Extra$System$Dir$Util$directoryDecoder = $author$project$Extra$System$Dir$Util$cyclic$directoryDecoder();
+	$author$project$Extra$System$Dir$Util$cyclic$directoryDecoder = function () {
+		return $author$project$Extra$System$Dir$Util$directoryDecoder;
 	};
-	var $author$project$Extra$System$File$Util$timeEntryDecoder = $author$project$Extra$System$File$Util$cyclic$timeEntryDecoder();
-	$author$project$Extra$System$File$Util$cyclic$timeEntryDecoder = function () {
-		return $author$project$Extra$System$File$Util$timeEntryDecoder;
+	var $author$project$Extra$System$Dir$Util$timeEntryDecoder = $author$project$Extra$System$Dir$Util$cyclic$timeEntryDecoder();
+	$author$project$Extra$System$Dir$Util$cyclic$timeEntryDecoder = function () {
+		return $author$project$Extra$System$Dir$Util$timeEntryDecoder;
 	};
-	var $author$project$Extra$System$File$Util$timeDirEntryDecoder = $author$project$Extra$System$File$Util$cyclic$timeDirEntryDecoder();
-	$author$project$Extra$System$File$Util$cyclic$timeDirEntryDecoder = function () {
-		return $author$project$Extra$System$File$Util$timeDirEntryDecoder;
+	var $author$project$Extra$System$Dir$Util$timeDirEntryDecoder = $author$project$Extra$System$Dir$Util$cyclic$timeDirEntryDecoder();
+	$author$project$Extra$System$Dir$Util$cyclic$timeDirEntryDecoder = function () {
+		return $author$project$Extra$System$Dir$Util$timeDirEntryDecoder;
 	};
 } catch ($) {
-	throw 'Some top-level definitions from `Extra.System.File.Util` are causing infinite recursion:\n\n  ┌─────┐\n  │    directoryDecoder\n  │     ↓\n  │    timeEntryDecoder\n  │     ↓\n  │    timeDirEntryDecoder\n  └─────┘\n\nThese errors are very tricky, so read https://elm-lang.org/0.19.1/bad-recursion to learn how to fix it!';}
-var $author$project$Extra$System$File$Util$mapFileEntry = F4(
+	throw 'Some top-level definitions from `Extra.System.Dir.Util` are causing infinite recursion:\n\n  ┌─────┐\n  │    directoryDecoder\n  │     ↓\n  │    timeEntryDecoder\n  │     ↓\n  │    timeDirEntryDecoder\n  └─────┘\n\nThese errors are very tricky, so read https://elm-lang.org/0.19.1/bad-recursion to learn how to fix it!';}
+var $author$project$Extra$System$Dir$Util$mapFileEntry = F4(
 	function (fileStep, v, name, size) {
 		var _v0 = A3(fileStep, name, size, v);
 		var newV = _v0.a;
 		var io = _v0.b;
 		return _Utils_Tuple2(
 			newV,
-			A2($author$project$Extra$System$File$Util$UnreadFileEntry, size, io));
+			A2($author$project$Extra$System$Dir$Util$UnreadFileEntry, size, io));
 	});
-var $author$project$Extra$System$File$Util$directoryFolder = F6(
+var $author$project$Extra$System$Dir$Util$directoryFolder = F6(
 	function (fileStep, beforeDirStep, afterDirStep, _v2, name, _v3) {
 		var v = _v2.a;
 		var directory = _v2.b;
 		var time = _v3.a;
 		var entry = _v3.b;
-		var _v4 = A6($author$project$Extra$System$File$Util$mapEntry, fileStep, beforeDirStep, afterDirStep, v, name, entry);
+		var _v4 = A6($author$project$Extra$System$Dir$Util$mapEntry, fileStep, beforeDirStep, afterDirStep, v, name, entry);
 		var newV = _v4.a;
 		var newEntry = _v4.b;
 		return _Utils_Tuple2(
@@ -72341,18 +72519,18 @@ var $author$project$Extra$System$File$Util$directoryFolder = F6(
 				_Utils_Tuple2(time, newEntry),
 				directory));
 	});
-var $author$project$Extra$System$File$Util$foldDirectory = F5(
+var $author$project$Extra$System$Dir$Util$foldDirectory = F5(
 	function (fileStep, beforeDirStep, afterDirStep, v, directory) {
 		return A3(
 			$author$project$Extra$Type$Map$foldlWithKey,
-			A3($author$project$Extra$System$File$Util$directoryFolder, fileStep, beforeDirStep, afterDirStep),
+			A3($author$project$Extra$System$Dir$Util$directoryFolder, fileStep, beforeDirStep, afterDirStep),
 			_Utils_Tuple2(v, $author$project$Extra$Type$Map$empty),
 			directory);
 	});
-var $author$project$Extra$System$File$Util$mapDirEntry = F6(
+var $author$project$Extra$System$Dir$Util$mapDirEntry = F6(
 	function (fileStep, beforeDirStep, afterDirStep, v, name, subDirectory) {
 		var _v1 = A5(
-			$author$project$Extra$System$File$Util$foldDirectory,
+			$author$project$Extra$System$Dir$Util$foldDirectory,
 			fileStep,
 			beforeDirStep,
 			afterDirStep,
@@ -72362,25 +72540,25 @@ var $author$project$Extra$System$File$Util$mapDirEntry = F6(
 		var newSubDirectory = _v1.b;
 		return _Utils_Tuple2(
 			A3(afterDirStep, name, v, newV),
-			$author$project$Extra$System$File$Util$DirectoryEntry(newSubDirectory));
+			$author$project$Extra$System$Dir$Util$DirectoryEntry(newSubDirectory));
 	});
-var $author$project$Extra$System$File$Util$mapEntry = F6(
+var $author$project$Extra$System$Dir$Util$mapEntry = F6(
 	function (fileStep, beforeDirStep, afterDirStep, v, name, entry) {
 		if (entry.$ === 'UnreadFileEntry') {
 			var size = entry.a;
-			return A4($author$project$Extra$System$File$Util$mapFileEntry, fileStep, v, name, size);
+			return A4($author$project$Extra$System$Dir$Util$mapFileEntry, fileStep, v, name, size);
 		} else {
 			var subDirectory = entry.a;
-			return A6($author$project$Extra$System$File$Util$mapDirEntry, fileStep, beforeDirStep, afterDirStep, v, name, subDirectory);
+			return A6($author$project$Extra$System$Dir$Util$mapDirEntry, fileStep, beforeDirStep, afterDirStep, v, name, subDirectory);
 		}
 	});
-var $author$project$Extra$System$File$Util$processUnreadFiles = F5(
+var $author$project$Extra$System$Dir$Util$processUnreadFiles = F5(
 	function (fileStep, beforeDirStep, afterDirStep, v, directory) {
-		return A5($author$project$Extra$System$File$Util$foldDirectory, fileStep, beforeDirStep, afterDirStep, v, directory).b;
+		return A5($author$project$Extra$System$Dir$Util$foldDirectory, fileStep, beforeDirStep, afterDirStep, v, directory).b;
 	});
-var $author$project$Extra$System$File$Util$getTree = F5(
+var $author$project$Extra$System$Dir$Util$getTree = F5(
 	function (fileStep, beforeDirStep, afterDirStep, v, tree) {
-		var _v0 = A2($elm$json$Json$Decode$decodeString, $author$project$Extra$System$File$Util$directoryDecoder, tree);
+		var _v0 = A2($elm$json$Json$Decode$decodeString, $author$project$Extra$System$Dir$Util$directoryDecoder, tree);
 		if (_v0.$ === 'Ok') {
 			var _v1 = _v0.a;
 			var time = _v1.a;
@@ -72388,25 +72566,25 @@ var $author$project$Extra$System$File$Util$getTree = F5(
 			return $author$project$Extra$System$IO$return(
 				_Utils_Tuple2(
 					time,
-					A5($author$project$Extra$System$File$Util$processUnreadFiles, fileStep, beforeDirStep, afterDirStep, v, directory)));
+					A5($author$project$Extra$System$Dir$Util$processUnreadFiles, fileStep, beforeDirStep, afterDirStep, v, directory)));
 		} else {
-			return $author$project$Extra$System$File$Util$getTreeError;
+			return $author$project$Extra$System$Dir$Util$getTreeError;
 		}
 	});
-var $author$project$Extra$System$File$Remote$processBody = F3(
+var $author$project$Extra$System$Dir$Local$processBody = F3(
 	function (prefix, remotePath, body) {
 		return A5(
-			$author$project$Extra$System$File$Util$getTree,
-			$author$project$Extra$System$File$Remote$fileStep(prefix),
-			$author$project$Extra$System$File$Remote$beforeDirStep,
-			$author$project$Extra$System$File$Remote$afterDirStep,
+			$author$project$Extra$System$Dir$Util$getTree,
+			$author$project$Extra$System$Dir$Local$fileStep(prefix),
+			$author$project$Extra$System$Dir$Local$beforeDirStep,
+			$author$project$Extra$System$Dir$Local$afterDirStep,
 			remotePath,
 			body);
 	});
-var $author$project$Extra$System$File$Util$requestString = F3(
+var $author$project$Extra$System$Dir$Util$requestString = F3(
 	function (prefix, remotePath, callback) {
 		return A3(
-			$author$project$Extra$System$File$Util$performRequest,
+			$author$project$Extra$System$Dir$Util$performRequest,
 			prefix,
 			remotePath,
 			F2(
@@ -72414,76 +72592,46 @@ var $author$project$Extra$System$File$Util$requestString = F3(
 					return A3($author$project$Extra$System$Http$withStringResponse, request, manager, callback);
 				}));
 	});
-var $author$project$Extra$System$File$Remote$getTree = F2(
+var $author$project$Extra$System$Dir$Local$getTree = F2(
 	function (prefix, remotePath) {
 		return A3(
-			$author$project$Extra$System$File$Util$requestString,
+			$author$project$Extra$System$Dir$Util$requestString,
 			prefix,
 			remotePath,
 			function (response) {
 				if (response.$ === 'Right') {
 					var body = response.a;
-					return A3($author$project$Extra$System$File$Remote$processBody, prefix, remotePath, body);
+					return A3($author$project$Extra$System$Dir$Local$processBody, prefix, remotePath, body);
 				} else {
-					return $author$project$Extra$System$File$Util$getTreeError;
+					return $author$project$Extra$System$Dir$Util$getTreeError;
 				}
 			});
 	});
-var $author$project$Extra$System$File$lensMountPrefix = {
-	getter: function (_v0) {
-		var _v1 = _v0.a;
-		var x = _v1.c;
-		return x;
-	},
-	setter: F2(
-		function (x, _v2) {
-			var _v3 = _v2.a;
-			var ai = _v3.a;
-			var bi = _v3.b;
-			var b = _v2.b;
-			var c = _v2.c;
-			var d = _v2.d;
-			var e = _v2.e;
-			var f = _v2.f;
-			var g = _v2.g;
-			var h = _v2.h;
-			return A8(
-				$author$project$Global$State,
-				A3($author$project$Extra$System$File$FileSystem, ai, bi, x),
-				b,
-				c,
-				d,
-				e,
-				f,
-				g,
-				h);
-		})
-};
-var $author$project$Extra$System$File$MountedFileEntry = F2(
+var $author$project$Extra$System$Dir$MountedFileEntry = F2(
 	function (a, b) {
 		return {$: 'MountedFileEntry', a: a, b: b};
 	});
-var $author$project$Extra$System$File$mapMountedDirectory = function (mountedDirectory) {
+var $author$project$Extra$System$Dir$mapMountedDirectory = function (mountedDirectory) {
 	return A2(
 		$author$project$Extra$Type$Map$map,
-		$elm$core$Tuple$mapSecond($author$project$Extra$System$File$mapMountedEntry),
+		$elm$core$Tuple$mapSecond($author$project$Extra$System$Dir$mapMountedEntry),
 		mountedDirectory);
 };
-var $author$project$Extra$System$File$mapMountedEntry = function (mountedEntry) {
+var $author$project$Extra$System$Dir$mapMountedEntry = function (mountedEntry) {
 	if (mountedEntry.$ === 'UnreadFileEntry') {
 		var size = mountedEntry.a;
 		var io = mountedEntry.b;
-		return A2($author$project$Extra$System$File$MountedFileEntry, size, io);
+		return A2($author$project$Extra$System$Dir$MountedFileEntry, size, io);
 	} else {
 		var directory = mountedEntry.a;
-		return $author$project$Extra$System$File$DirectoryEntry(
-			$author$project$Extra$System$File$mapMountedDirectory(directory));
+		return $author$project$Extra$System$Dir$DirectoryEntry(
+			$author$project$Extra$System$Dir$mapMountedDirectory(directory));
 	}
 };
-var $author$project$Extra$System$File$mapMountedTree = function (mountedTree) {
-	return A2($elm$core$Tuple$mapSecond, $author$project$Extra$System$File$mapMountedDirectory, mountedTree);
+var $author$project$Extra$System$Dir$mapMountedTree = function (mountedTree) {
+	return A2($elm$core$Tuple$mapSecond, $author$project$Extra$System$Dir$mapMountedDirectory, mountedTree);
 };
-var $author$project$Extra$System$File$mountEntry = F2(
+var $author$project$Extra$System$Dir$mountEntry = F2(
 	function (_v0, _v1) {
 		var time = _v0.a;
 		var mountedDirectory = _v0.b;
@@ -72497,7 +72645,7 @@ var $author$project$Extra$System$File$mountEntry = F2(
 					fileName,
 					_Utils_Tuple2(
 						time,
-						$author$project$Extra$System$File$DirectoryEntry(mountedDirectory)),
+						$author$project$Extra$System$Dir$DirectoryEntry(mountedDirectory)),
 					directory));
 		} else {
 			if (maybeEntry.a.b.$ === 'DirectoryEntry') {
@@ -72509,17 +72657,17 @@ var $author$project$Extra$System$File$mountEntry = F2(
 						fileName,
 						_Utils_Tuple2(
 							time,
-							$author$project$Extra$System$File$DirectoryEntry(mountedDirectory)),
+							$author$project$Extra$System$Dir$DirectoryEntry(mountedDirectory)),
 						directory)) : $elm$core$Maybe$Nothing;
 			} else {
 				return $elm$core$Maybe$Nothing;
 			}
 		}
 	});
-var $author$project$Extra$System$File$mountHelper = F2(
+var $author$project$Extra$System$Dir$mountHelper = F2(
 	function (filePath, mountedTree) {
 		return A3(
-			$author$project$Extra$System$File$walkFileSystem,
+			$author$project$Extra$System$Dir$walkFileSystem,
 			true,
 			filePath,
 			F2(
@@ -72527,33 +72675,64 @@ var $author$project$Extra$System$File$mountHelper = F2(
 					return _Utils_Tuple2(
 						A2(
 							$elm$core$Maybe$andThen,
-							$author$project$Extra$System$File$mountEntry(
-								$author$project$Extra$System$File$mapMountedTree(mountedTree)),
+							$author$project$Extra$System$Dir$mountEntry(
+								$author$project$Extra$System$Dir$mapMountedTree(mountedTree)),
 							maybeNode),
 						_Utils_Tuple0);
 				}));
 	});
-var $author$project$Extra$System$File$mountRemote = F2(
+var $author$project$Extra$System$Config$lensMountPrefix = {
+	getter: function (_v0) {
+		var _v1 = _v0.a;
+		var x = _v1.b;
+		return x;
+	},
+	setter: F2(
+		function (x, _v2) {
+			var _v3 = _v2.a;
+			var ai = _v3.a;
+			var ci = _v3.c;
+			var b = _v2.b;
+			var c = _v2.c;
+			var d = _v2.d;
+			var e = _v2.e;
+			var f = _v2.f;
+			var g = _v2.g;
+			var h = _v2.h;
+			return A8(
+				$author$project$Global$State,
+				A3($author$project$Extra$System$Config$LocalState, ai, x, ci),
+				b,
+				c,
+				d,
+				e,
+				f,
+				g,
+				h);
+		})
+};
+var $author$project$Extra$System$Config$mountPrefix = $author$project$Extra$System$IO$getLens($author$project$Extra$System$Config$lensMountPrefix);
+var $author$project$Extra$System$Dir$mountLocal = F2(
 	function (mountPoint, filePath) {
 		return A2(
 			$author$project$Extra$System$IO$bind,
-			$author$project$Extra$System$IO$getLens($author$project$Extra$System$File$lensMountPrefix),
+			$author$project$Extra$System$Config$mountPrefix,
 			function (mountPrefix) {
 				return A2(
 					$author$project$Extra$System$IO$bind,
-					A2($author$project$Extra$System$File$Remote$getTree, mountPrefix, mountPoint),
-					$author$project$Extra$System$File$mountHelper(filePath));
+					A2($author$project$Extra$System$Dir$Local$getTree, mountPrefix, mountPoint),
+					$author$project$Extra$System$Dir$mountHelper(filePath));
 			});
 	});
-var $author$project$Extra$System$File$Static$afterDirStep = F3(
+var $author$project$Extra$System$Dir$Static$afterDirStep = F3(
 	function (_v0, _v1, afterAcc) {
 		return afterAcc;
 	});
-var $author$project$Extra$System$File$Static$beforeDirStep = F2(
+var $author$project$Extra$System$Dir$Static$beforeDirStep = F2(
 	function (_v0, acc) {
 		return acc;
 	});
-var $author$project$Extra$System$File$Util$sliceDecoder = F2(
+var $author$project$Extra$System$Dir$Util$sliceDecoder = F2(
 	function (offset, length) {
 		return A2(
 			$elm$bytes$Bytes$Decode$andThen,
@@ -72562,23 +72741,23 @@ var $author$project$Extra$System$File$Util$sliceDecoder = F2(
 			},
 			$elm$bytes$Bytes$Decode$bytes(offset));
 	});
-var $author$project$Extra$System$File$Util$sliceBytes = F3(
+var $author$project$Extra$System$Dir$Util$sliceBytes = F3(
 	function (offset, length, bytes) {
 		return A2(
 			$elm$bytes$Bytes$Decode$decode,
-			A2($author$project$Extra$System$File$Util$sliceDecoder, offset, length),
+			A2($author$project$Extra$System$Dir$Util$sliceDecoder, offset, length),
 			bytes);
 	});
-var $author$project$Extra$System$File$Static$fileStep = F3(
+var $author$project$Extra$System$Dir$Static$fileStep = F3(
 	function (_v0, size, _v1) {
 		var offset = _v1.a;
 		var bytes = _v1.b;
 		return _Utils_Tuple2(
 			_Utils_Tuple2(offset + size, bytes),
 			$author$project$Extra$System$IO$return(
-				A3($author$project$Extra$System$File$Util$sliceBytes, offset, size, bytes)));
+				A3($author$project$Extra$System$Dir$Util$sliceBytes, offset, size, bytes)));
 	});
-var $author$project$Extra$System$File$Static$treeBytesDecoder = A2(
+var $author$project$Extra$System$Dir$Static$treeBytesDecoder = A2(
 	$elm$bytes$Bytes$Decode$andThen,
 	function (treeLength) {
 		return A2(
@@ -72589,64 +72768,64 @@ var $author$project$Extra$System$File$Static$treeBytesDecoder = A2(
 			$elm$bytes$Bytes$Decode$string(treeLength));
 	},
 	$elm$bytes$Bytes$Decode$unsignedInt32($elm$bytes$Bytes$BE));
-var $author$project$Extra$System$File$Static$processBodyBytes = function (body) {
-	var _v0 = A2($elm$bytes$Bytes$Decode$decode, $author$project$Extra$System$File$Static$treeBytesDecoder, body);
+var $author$project$Extra$System$Dir$Static$processBodyBytes = function (body) {
+	var _v0 = A2($elm$bytes$Bytes$Decode$decode, $author$project$Extra$System$Dir$Static$treeBytesDecoder, body);
 	if (_v0.$ === 'Just') {
 		var _v1 = _v0.a;
 		var contentOffset = _v1.a;
 		var tree = _v1.b;
 		return A5(
-			$author$project$Extra$System$File$Util$getTree,
-			$author$project$Extra$System$File$Static$fileStep,
-			$author$project$Extra$System$File$Static$beforeDirStep,
-			$author$project$Extra$System$File$Static$afterDirStep,
+			$author$project$Extra$System$Dir$Util$getTree,
+			$author$project$Extra$System$Dir$Static$fileStep,
+			$author$project$Extra$System$Dir$Static$beforeDirStep,
+			$author$project$Extra$System$Dir$Static$afterDirStep,
 			_Utils_Tuple2(contentOffset, body),
 			tree);
 	} else {
-		return $author$project$Extra$System$File$Util$getTreeError;
+		return $author$project$Extra$System$Dir$Util$getTreeError;
 	}
 };
-var $author$project$Extra$System$File$Static$getTree = F2(
+var $author$project$Extra$System$Dir$Static$getTree = F2(
 	function (prefix, remotePath) {
 		return A3(
-			$author$project$Extra$System$File$Util$requestBytes,
+			$author$project$Extra$System$Dir$Util$requestBytes,
 			prefix,
 			remotePath,
 			function (response) {
 				if (response.$ === 'Right') {
 					var body = response.a;
-					return $author$project$Extra$System$File$Static$processBodyBytes(body);
+					return $author$project$Extra$System$Dir$Static$processBodyBytes(body);
 				} else {
-					return $author$project$Extra$System$File$Util$getTreeError;
+					return $author$project$Extra$System$Dir$Util$getTreeError;
 				}
 			});
 	});
-var $author$project$Extra$System$File$mountStatic = F2(
+var $author$project$Extra$System$Dir$mountStatic = F2(
 	function (mountPoint, filePath) {
 		return A2(
 			$author$project$Extra$System$IO$bind,
 			A2(
-				$author$project$Extra$System$File$Static$getTree,
+				$author$project$Extra$System$Dir$Static$getTree,
 				$elm$core$Maybe$Just(''),
 				mountPoint),
-			$author$project$Extra$System$File$mountHelper(filePath));
+			$author$project$Extra$System$Dir$mountHelper(filePath));
 	});
-var $author$project$Extra$System$File$setCurrentDirectory = function (cwd) {
+var $author$project$Extra$System$Dir$setCurrentDirectory = function (cwd) {
 	return A2(
 		$author$project$Extra$System$IO$bind,
-		$author$project$Extra$System$File$makeAbsolute(cwd),
+		$author$project$Extra$System$Dir$makeAbsolute(cwd),
 		function (absolutePath) {
 			return A2(
 				$author$project$Extra$System$IO$putLens,
-				$author$project$Extra$System$File$lensCwd,
-				$author$project$Extra$System$File$getNames(absolutePath));
+				$author$project$Extra$System$Dir$lensCwd,
+				$author$project$Extra$System$Dir$getNames(absolutePath));
 		});
 };
-var $author$project$Extra$System$File$setMountPrefix = function (mountPrefix) {
-	return A2($author$project$Extra$System$IO$putLens, $author$project$Extra$System$File$lensMountPrefix, mountPrefix);
+var $author$project$Extra$System$Config$setHttpPrefix = function (prefix) {
+	return A2($author$project$Extra$System$IO$putLens, $author$project$Extra$System$Config$lensHttpPrefix, prefix);
 };
-var $author$project$Builder$Http$setPrefix = function (prefix) {
-	return A2($author$project$Extra$System$IO$putLens, $author$project$Builder$Http$lensPrefix, prefix);
+var $author$project$Extra$System$Config$setMountPrefix = function (prefix) {
+	return A2($author$project$Extra$System$IO$putLens, $author$project$Extra$System$Config$lensMountPrefix, prefix);
 };
 var $author$project$Repl$Worker$flagToMsg = function (_v0) {
 	var config = _v0.a;
@@ -72654,24 +72833,26 @@ var $author$project$Repl$Worker$flagToMsg = function (_v0) {
 	var val2 = _v0.c;
 	switch (config) {
 		case 'httpPrefix':
-			return $author$project$Builder$Http$setPrefix(
+			return $author$project$Extra$System$Config$setHttpPrefix(
 				$elm$core$Maybe$Just(val1));
 		case 'mountPrefix':
-			return $author$project$Extra$System$File$setMountPrefix(
+			return $author$project$Extra$System$Config$setMountPrefix(
 				$elm$core$Maybe$Just(val1));
-		case 'mountRemote':
+		case 'srcDir':
+			return $author$project$Extra$System$Config$addAdditionalSrcDir(val1);
+		case 'mountLocal':
 			return A2(
-				$author$project$Extra$System$File$mountRemote,
+				$author$project$Extra$System$Dir$mountLocal,
 				val1,
-				$author$project$Extra$System$File$fromString(val2));
+				$author$project$Extra$System$Dir$fromString(val2));
 		case 'mountStatic':
 			return A2(
-				$author$project$Extra$System$File$mountStatic,
+				$author$project$Extra$System$Dir$mountStatic,
 				val1,
-				$author$project$Extra$System$File$fromString(val2));
+				$author$project$Extra$System$Dir$fromString(val2));
 		case 'currentDir':
-			return $author$project$Extra$System$File$setCurrentDirectory(
-				$author$project$Extra$System$File$fromString(val1));
+			return $author$project$Extra$System$Dir$setCurrentDirectory(
+				$author$project$Extra$System$Dir$fromString(val1));
 		case 'import':
 			return A2(
 				$author$project$Extra$System$IO$modifyLens,
@@ -72725,38 +72906,6 @@ var $author$project$Repl$Worker$initialMsg = function (flags) {
 	return $author$project$Extra$System$IO$sequence(
 		A2($author$project$Extra$Type$List$map, $author$project$Repl$Worker$flagToMsg, flags));
 };
-var $elm$core$Platform$Cmd$batch = _Platform_batch;
-var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
-var $author$project$Repl$Worker$update = F2(
-	function (msg, model) {
-		update:
-		while (true) {
-			var _v0 = msg(model);
-			switch (_v0.a.$) {
-				case 'Pure':
-					var newModel = _v0.b;
-					return _Utils_Tuple2(newModel, $elm$core$Platform$Cmd$none);
-				case 'ImpureCmd':
-					var cmd = _v0.a.a;
-					var newModel = _v0.b;
-					return _Utils_Tuple2(newModel, cmd);
-				default:
-					var cont = _v0.a.a;
-					var newModel = _v0.b;
-					var $temp$msg = cont($elm$core$Basics$identity),
-						$temp$model = newModel;
-					msg = $temp$msg;
-					model = $temp$model;
-					continue update;
-			}
-		}
-	});
-var $author$project$Repl$Worker$init = function (flags) {
-	return A2(
-		$author$project$Repl$Worker$update,
-		$author$project$Repl$Worker$initialMsg(flags),
-		$author$project$Repl$Worker$initialModel);
-};
 var $elm$json$Json$Decode$list = _Json_decodeList;
 var $elm$core$Platform$Sub$batch = _Platform_batch;
 var $author$project$Repl$Api$clientRequestCodec = {
@@ -72781,7 +72930,11 @@ var $author$project$Repl$Worker$subscriptions = function (model) {
 };
 var $elm$core$Platform$worker = _Platform_worker;
 var $author$project$Repl$Worker$main = $elm$core$Platform$worker(
-	{init: $author$project$Repl$Worker$init, subscriptions: $author$project$Repl$Worker$subscriptions, update: $author$project$Repl$Worker$update});
+	{
+		init: A2($author$project$Extra$System$IO$init, $author$project$Repl$Worker$initialModel, $author$project$Repl$Worker$initialMsg),
+		subscriptions: $author$project$Repl$Worker$subscriptions,
+		update: $author$project$Extra$System$IO$update
+	});
 _Platform_export({'Repl':{'Worker':{'init':$author$project$Repl$Worker$main(
 	$elm$json$Json$Decode$list(
 		A2(
