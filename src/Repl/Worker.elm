@@ -3,11 +3,11 @@ port module Repl.Worker exposing (main)
 import Builder.Build as Build
 import Builder.Elm.Details as Details
 import Builder.Generate as Generate
-import Builder.Http as Http
 import Builder.Reporting.Exit as Exit
 import Builder.Reporting.Exit.Help as ExitHelp
 import Compiler.Reporting.Doc as Doc
-import Extra.System.File as SysFile
+import Extra.System.Config as Config
+import Extra.System.Dir as Dir
 import Extra.System.IO as IO
 import Extra.System.IO.Port as Port
 import Extra.Type.Either exposing (Either(..))
@@ -27,10 +27,14 @@ import Terminal.Repl as Repl
 main : Program Flags Model Msg
 main =
     Platform.worker
-        { init = init
+        { init = IO.init initialModel initialMsg
         , subscriptions = subscriptions
-        , update = update
+        , update = IO.update
         }
+
+
+type alias Flags =
+    TList ( String, String, String )
 
 
 
@@ -41,11 +45,11 @@ type alias Model =
     Repl.GlobalState LocalState
 
 
-initialModel : Model
-initialModel =
+initialModel : Flags -> Model
+initialModel _ =
     Global.State
-        SysFile.initialState
-        Http.initialState
+        Config.initialState
+        Dir.initialState
         Details.initialState
         Build.initialState
         Generate.initialState
@@ -110,19 +114,6 @@ lensReplState =
 
 
 
--- INIT
-
-
-type alias Flags =
-    TList ( String, String, String )
-
-
-init : Flags -> ( Model, Cmd Msg )
-init flags =
-    update (initialMsg flags) initialModel
-
-
-
 -- MSG
 
 
@@ -143,19 +134,22 @@ flagToMsg : ( String, String, String ) -> Msg
 flagToMsg ( config, val1, val2 ) =
     case config of
         "httpPrefix" ->
-            Http.setPrefix (Just val1)
+            Config.setHttpPrefix (Just val1)
 
         "mountPrefix" ->
-            SysFile.setMountPrefix (Just val1)
+            Config.setMountPrefix (Just val1)
 
-        "mountRemote" ->
-            SysFile.mountRemote val1 (SysFile.fromString val2)
+        "srcDir" ->
+            Config.addAdditionalSrcDir val1
+
+        "mountLocal" ->
+            Dir.mountLocal val1 (Dir.fromString val2)
 
         "mountStatic" ->
-            SysFile.mountStatic val1 (SysFile.fromString val2)
+            Dir.mountStatic val1 (Dir.fromString val2)
 
         "currentDir" ->
-            SysFile.setCurrentDirectory (SysFile.fromString val1)
+            Dir.setCurrentDirectory (Dir.fromString val1)
 
         "import" ->
             IO.modifyLens lensReplMode <|
@@ -224,23 +218,6 @@ subscriptions model =
         [ clientToWorkerResponder handleClientCall
         , workerToJavaScriptRequester.respond model
         ]
-
-
-
--- UPDATE
-
-
-update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
-    case msg model of
-        ( IO.Pure (), newModel ) ->
-            ( newModel, Cmd.none )
-
-        ( IO.ImpureCmd cmd, newModel ) ->
-            ( newModel, cmd )
-
-        ( IO.ImpureCont cont, newModel ) ->
-            update (cont identity) newModel
 
 
 
