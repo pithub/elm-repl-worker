@@ -18,10 +18,10 @@ import Repl.Api as Api
 main : Program () Model Msg
 main =
     Browser.element
-        { init = init
+        { init = IO.init initialModel initialMsg
         , view = view
         , subscriptions = subscriptions
-        , update = update
+        , update = IO.update
         }
 
 
@@ -48,8 +48,8 @@ type alias ReplShownModel =
     }
 
 
-initialModel : Model
-initialModel =
+initialModel : () -> Model
+initialModel _ =
     Model
         { replState = ReplHidden Nothing
         , workerCont = Nothing
@@ -71,15 +71,6 @@ lensWorkerCont =
 
 
 
--- INIT
-
-
-init : () -> ( Model, Cmd Msg )
-init () =
-    update initialMsg initialModel
-
-
-
 -- MSG
 
 
@@ -87,8 +78,8 @@ type alias Msg =
     IO.IO Model ()
 
 
-initialMsg : Msg
-initialMsg =
+initialMsg : () -> Msg
+initialMsg _ =
     IO.noOp
 
 
@@ -114,23 +105,6 @@ clientToWorkerRequester =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     clientToWorkerRequester.respond model
-
-
-
--- UPDATE
-
-
-update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
-    case msg model of
-        ( IO.Pure (), newModel ) ->
-            ( newModel, Cmd.none )
-
-        ( IO.ImpureCmd cmd, newModel ) ->
-            ( newModel, cmd )
-
-        ( IO.ImpureCont cont, newModel ) ->
-            update (cont identity) newModel
 
 
 
